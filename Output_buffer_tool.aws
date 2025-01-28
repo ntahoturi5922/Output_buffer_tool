@@ -1,0 +1,14 @@
+[Version]
+Version=13.1
+[Designs]
+output_buffer_tool=.\output_buffer_tool\output_buffer_tool.adf
+[Browser]
+sort=order
+mode=none
+[Order]
+order=1
+macro=
+[Expand]
+output_buffer_tool=1
+[Settings]
+Active=output_buffer_tool

@@ -1,0 +1,25 @@
+[CACHESIMPLE|Aldec.SymbolsCommands.7]
+Built-in symbols=0
+output_buffer_tool=0
+[COMPILESTATUS|.\src\TX_CAPUTER.vhd]
+FileTimeLow=398073800
+FileTimeHigh=31158711
+Status=Compiled
+[COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
+FileTimeLow=524756663
+FileTimeHigh=31158706
+Status=Compiled
+[COMPILESTATUS|.\src\Capture_registers.vhd]
+FileTimeLow=4007102594
+FileTimeHigh=31158699
+Status=Warning
+[General]
+CurrentVersion=103
+[CACHEDOC|Aldec.Project.Generic.7|.\output_buffer_tool\output_buffer_tool.adf|]
+Path=
+[Gui config]
+RunFor=100 ns
+[COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
+FileTimeLow=1536967870
+FileTimeHigh=31158711
+Status=Compiled

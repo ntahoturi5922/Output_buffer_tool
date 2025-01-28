@@ -72,20 +72,22 @@ port map(
     clka      => read_clk,
     addra    => addra,-- 1k x 32 R/W axi
     dina    =>dina,
-    ena    =>  ena,
+    ena    =>  ena,	
+	data_in  =>	data_in,
+	trig       => trig,
     wea    => wea ,
     douta    => fifo_data_out,
 	reset    =>	 reset,
     clkb    => clock,
     addrb    => addrb, -- 2k x 16 writeonly spybuff
     dinb    =>	dinb,
-    web    =>  web,
-	address1    =>  address1 ,
-	address2    => address2,
+    web    =>  web
+	--address1    =>  address1 ,
+	--address2    => address2,
 	
-    data1    => data1,-- captured data from the tx line
-	data2    =>	 data2
-  
+   -- data1    => data1,-- captured data from the tx line
+	--data2    =>	 data2
+  --
   );
 
 
@@ -162,7 +164,7 @@ begin
     begin
         -- Reset the UUT
         reset <= '1';
-        wait for 20 ns;
+        wait for 10 ns;
         reset <= '0';
 
         -- Wait for some clock cycles
@@ -170,31 +172,31 @@ begin
 
         -- Apply trigger
         trig <= '1';
-        wait for 20 ns;
+        wait for 10 ns;
         trig <= '0';
 		STOP_CAP <= '0';
         -- Simulate TX_CAP_P and TX_CAP_N toggling
 		data_in <= X"00000000bababeef";	
-		ena <='1'; 
+		ena <='0'; 
 		wea <='1';
 		--address<= "000000"	;
-		wait for 20 ns 	;
+		wait for 10 ns 	;
 		
 		
 		data_in <= X"beefbaba00000000";	
-		ena <='1'; 
+		ena <='0'; 
 		wea <='1';
 		--address<= "000001";
-		wait for 20 ns	;
+		wait for 10 ns	;
 		
 		data_in <= X"00000000cafebabe";	
-		ena <='1'; 
+		ena <='0'; 
 		wea <='1';		
 		--address<= "000010";
-		wait for 20 ns	;
+		wait for 10 ns	;
 		
 		data_in <= X"babecafe00000000";	
-		ena <='1'; 
+		ena <='0'; 
 		wea <='1';	
 		web <= '1';
 		
@@ -202,25 +204,36 @@ begin
 		wait for 10 ns	;
 		
 		data_in <= X"00000000deadbeef";	 
-		ena <='1'; 
-		wea <='0';	  
-		addra <= "000000000000100" ;
-		--address<= "000100";
+		ena <='0'; 
+		wea <='1';	  
+		
 		wait for 10 ns	;
 								
 		data_in <= X"beefdead00000000";	 
-		ena <='1'; 
-		wea <='0';	
-		addra <= "000000000001000" ;
+		ena <='0'; 
+		wea <='1';	
+		
 		--address<= "000110";
 		wait for 10 ns	  ;
 		
 		data_in <= X"00000000dadabeef";	
 		ena <='1'; 
 		wea <='0'; 
-		addra <= "000000000001100" ;
+		
 		--address<= "000101";
-		wait for 10 ns	;
+		wait for 30 ns	; 
+		ena <='1'; 
+		wea <='0';
+ 		addra <= "000000000000100" ;
+		wait for 30 ns	;
+		ena <='1'; 
+		wea <='0';
+		addra <= "000000000001000" ;
+		wait for 30 ns	;  
+		ena <='1'; 
+		wea <='0';
+		addra <= "000000000001100" ;
+		wait for 30 ns	;
 
         -- Stop capture
         STOP_CAP <= '0';

@@ -20,10 +20,10 @@ Path=
 [Gui config]
 RunFor=100 ns
 [COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
-FileTimeLow=1131335022
-FileTimeHigh=31158735
+FileTimeLow=1553357682
+FileTimeHigh=31158743
 Status=Modified
 [COMPILESTATUS|.\src\Capture_registers.vhd]
-FileTimeLow=2165389960
-FileTimeHigh=31158732
-Status=Modified
+FileTimeLow=211667600
+FileTimeHigh=31158739
+Status=Error

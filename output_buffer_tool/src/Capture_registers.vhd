@@ -18,12 +18,12 @@ port(
     addrb: in std_logic_vector(14 downto 0); -- 2k x 16 writeonly spybuff
     dinb:  in std_logic_vector(31 downto 0);
     web:   in std_logic;
-	address1: in std_logic_vector (14 downto 0);   
-	address2: in std_logic_vector (14 downto 0);
-	
-    data1:  in std_logic_vector(31 downto 0); -- captured data from the tx line
-	data2:	in std_logic_vector(31 downto 0)
-  
+	--address1: in std_logic_vector (14 downto 0);   
+	--address2: in std_logic_vector (14 downto 0);
+	trig: in std_logic;
+    --data1:  in std_logic_vector(31 downto 0); -- captured data from the tx line
+	--data2:	in std_logic_vector(31 downto 0)
+  	data_in :in std_logic_vector (63 downto 0)  
   );
 end capture_registers;
 
@@ -33,7 +33,8 @@ type state_machine is (write_reg1, write_reg2);
 signal state: state_machine	;
 signal write_cnt: integer range 0 to 31 :=0;
 signal done_write: std_logic:='0'  ;
-
+signal cap_data1,cap_data2: std_logic_vector (31 downto 0);
+signal cap_addr1,cap_addr2: std_logic_vector (14 downto 0);
 
 
 
@@ -50,7 +51,20 @@ begin
 	
 wea_i <= "1111" when ( wea='1' ) else "0000";	
 	  
-
+    capture_componet: entity work.TX_CAPUTER
+        port map (
+            clock      => clkb,
+            reset      => reset,
+            trig       => trig,
+			
+    		Data_in  =>	data_in,
+            --STOP_CAP   => STOP_CAP,
+            address1    =>   cap_addr1 ,
+			address2    => 	cap_addr2,
+	
+    		data1    =>   cap_data1,
+			data2    => cap_data2
+        );
 	
 
 
@@ -167,8 +181,8 @@ begin
 				write_cnt <= 0;	
 					case state is
 						when write_reg1  =>
-							DINBDIN <= data1;	
-							ADDRBWRADDR <= address1;
+							DINBDIN <= cap_data1;	
+							ADDRBWRADDR <= cap_addr1;
 							write_cnt <= write_cnt +1 ; 
 							if write_cnt = write_cnt then  
 								state <=  write_reg2;
@@ -177,8 +191,8 @@ begin
 							end if;
 							
 						when write_reg2  =>
-							DINBDIN <= data2;	
-							ADDRBWRADDR <= address2;
+							DINBDIN <= cap_data2;	
+							ADDRBWRADDR <= cap_addr1;
 							write_cnt <= write_cnt +1 ; 
 							if write_cnt = write_cnt then  
 								state <=  write_reg1;

@@ -190,6 +190,6 @@ begin
 					
     end process;
 
-   
+  ADDRARDADDR <=  	addra;
    
    end behavior;

@@ -162,7 +162,7 @@ begin
     begin
         -- Reset the UUT
         reset <= '1';
-        wait for 10 ns;
+        wait for 20 ns;
         reset <= '0';
 
         -- Wait for some clock cycles
@@ -170,7 +170,7 @@ begin
 
         -- Apply trigger
         trig <= '1';
-        wait for 10 ns;
+        wait for 20 ns;
         trig <= '0';
 		STOP_CAP <= '0';
         -- Simulate TX_CAP_P and TX_CAP_N toggling
@@ -178,49 +178,53 @@ begin
 		ena <='1'; 
 		wea <='1';
 		--address<= "000000"	;
-		wait for 10 ns 	;
+		wait for 20 ns 	;
 		
 		
 		data_in <= X"beefbaba00000000";	
 		ena <='1'; 
 		wea <='1';
 		--address<= "000001";
-		wait for 10 ns	;
+		wait for 20 ns	;
 		
 		data_in <= X"00000000cafebabe";	
 		ena <='1'; 
 		wea <='1';		
 		--address<= "000010";
-		wait for 10 ns	;
+		wait for 20 ns	;
 		
 		data_in <= X"babecafe00000000";	
 		ena <='1'; 
-		wea <='1';		
+		wea <='1';	
+		web <= '1';
 		
 		--address<= "000011";
 		wait for 10 ns	;
 		
 		data_in <= X"00000000deadbeef";	 
 		ena <='1'; 
-		wea <='1';
+		wea <='0';	  
+		addra <= "000000000000100" ;
 		--address<= "000100";
 		wait for 10 ns	;
 								
 		data_in <= X"beefdead00000000";	 
 		ena <='1'; 
-		wea <='1';
+		wea <='0';	
+		addra <= "000000000001000" ;
 		--address<= "000110";
 		wait for 10 ns	  ;
 		
 		data_in <= X"00000000dadabeef";	
 		ena <='1'; 
-		wea <='1';
+		wea <='0'; 
+		addra <= "000000000001100" ;
 		--address<= "000101";
 		wait for 10 ns	;
 
         -- Stop capture
         STOP_CAP <= '0';
-        wait for 10 ns;
+        wait for 50 ns;
         trig <= '0'; 
 		ena <='0'; 
 		wea <='0';

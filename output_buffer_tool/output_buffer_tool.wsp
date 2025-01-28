@@ -10,9 +10,9 @@ FileTimeLow=524756663
 FileTimeHigh=31158706
 Status=Compiled
 [COMPILESTATUS|.\src\Capture_registers.vhd]
-FileTimeLow=4007102594
-FileTimeHigh=31158699
-Status=Warning
+FileTimeLow=2444724609
+FileTimeHigh=31158713
+Status=Modified
 [General]
 CurrentVersion=103
 [CACHEDOC|Aldec.Project.Generic.7|.\output_buffer_tool\output_buffer_tool.adf|]

@@ -2,17 +2,17 @@
 Built-in symbols=0
 output_buffer_tool=0
 [COMPILESTATUS|.\src\TX_CAPUTER.vhd]
-FileTimeLow=398073800
-FileTimeHigh=31158711
+FileTimeLow=3467921697
+FileTimeHigh=31158725
 Status=Compiled
 [COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
 FileTimeLow=524756663
 FileTimeHigh=31158706
 Status=Compiled
 [COMPILESTATUS|.\src\Capture_registers.vhd]
-FileTimeLow=2444724609
-FileTimeHigh=31158713
-Status=Modified
+FileTimeLow=1963014494
+FileTimeHigh=31158722
+Status=Error
 [General]
 CurrentVersion=103
 [CACHEDOC|Aldec.Project.Generic.7|.\output_buffer_tool\output_buffer_tool.adf|]
@@ -20,6 +20,10 @@ Path=
 [Gui config]
 RunFor=100 ns
 [COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
-FileTimeLow=1536967870
-FileTimeHigh=31158711
-Status=Compiled
+FileTimeLow=2133742098
+FileTimeHigh=31158730
+Status=Modified
+[COMPILESTATUS|.\src\Capture_registers.vhd]
+FileTimeLow=948795647
+FileTimeHigh=31158726
+Status=Error

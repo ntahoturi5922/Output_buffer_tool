@@ -1,52 +1,57 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.fixed_pkg.all;
+
 library unisim;
 use unisim.vcomponents.all;
 
 entity capture_registers is
 port(
-	--clock_write: in std_logic; -- master clock --200MHZ	
-	clock_read: in std_logic; -- master clock --100MHZ
-    reset: in std_logic; -- active high reset asyn -- only when reset this module works
-    trig:  in std_logic; -- trigger pulse sync to clock  -- from the trigger module	 
-	STOP_CAP: out std_logic;   -- stop capture when fifo is full and disable clock 
-	Start_read: in std_logic;   -- this signal goes high when registers are full
-    data:  in std_logic_vector(31 downto 0); -- captured data from the tx line
-	data_out: out std_logic_vector (31 downto 0) --- data to read	  
-	--EMPTY: out std_logic;   -- this sighnal goes high when fifo has been finished to be read and is ok to 
-	-- to triger again. 
-	--FULL: out std_logic
+    clka:  in std_logic;
+    addra: in std_logic_vector( 14 downto 0); -- 1k x 32 R/W axi
+    dina:  in std_logic_vector(31 downto 0);
+    ena:   in std_logic;
+    wea:   in std_logic;
+    douta: out std_logic_vector(31 downto 0);
+	reset: in std_logic;
+    clkb:  in std_logic;
+    addrb: in std_logic_vector(14 downto 0); -- 2k x 16 writeonly spybuff
+    dinb:  in std_logic_vector(31 downto 0);
+    web:   in std_logic;
+	address1: in std_logic_vector (14 downto 0);   
+	address2: in std_logic_vector (14 downto 0);
+	
+    data1:  in std_logic_vector(31 downto 0); -- captured data from the tx line
+	data2:	in std_logic_vector(31 downto 0)
   
   );
 end capture_registers;
 
 architecture behavior of capture_registers is	 
 
+type state_machine is (write_reg1, write_reg2);
+signal state: state_machine	;
+signal write_cnt: integer range 0 to 31 :=0;
+signal done_write: std_logic:='0'  ;
 
 
 
 
 
+signal ADDRARDADDR, ADDRBWRADDR: std_logic_vector(14 downto 0);
+signal wea_i: std_logic_vector(3 downto 0);
 
-
-signal data_out_reg: std_logic_vector(31 downto 0); ----------- signals goes here
-signal wren: std_logic;
-signal ren: std_logic;	 
-signal register_empty: std_logic;	   
-signal register_full: std_logic; 
-signal addra: std_logic_vector (5 downto 0):="000000";
+signal DINBDIN: std_logic_vector(31 downto 0);
 
 
 
 
 begin  
 	
-	
-wren <= '1' when   trig ='1' else '0';	  
+wea_i <= "1111" when ( wea='1' ) else "0000";	
+	  
 
-STOP_CAP <= '0';	
+	
 
 
 SPY_RAM_inst : RAMB36E2
@@ -151,9 +156,39 @@ port map (
 
 );
 
-
-
-   data_out <= 	 data_out_reg;	  
+process (clkb,reset)
+begin
+        if reset = '1' then		   --- here we are in reset
+			done_write <= '0';
+			write_cnt <= 0;
+        elsif rising_edge (clkb) then	 --- getting out of reset	
+				done_write <= '1';
+                state <= write_reg1; 
+				write_cnt <= 0;	
+					case state is
+						when write_reg1  =>
+							DINBDIN <= data1;	
+							ADDRBWRADDR <= address1;
+							write_cnt <= write_cnt +1 ; 
+							if write_cnt = write_cnt then  
+								state <=  write_reg2;
+							else
+								state <=  write_reg1;
+							end if;
+							
+						when write_reg2  =>
+							DINBDIN <= data2;	
+							ADDRBWRADDR <= address2;
+							write_cnt <= write_cnt +1 ; 
+							if write_cnt = write_cnt then  
+								state <=  write_reg1;
+							else
+								state <=  write_reg2;
+							end if;							
+					end case;
+         end if;	
+					
+    end process;
 
    
    

@@ -11,8 +11,8 @@ port(
     reset: in std_logic; -- active high reset asyn -- only when reset this module works
     trig:  in std_logic; -- trigger pulse sync to clock  -- from the trigger module	 
 	Data_in: in std_logic_vector (63 downto 0); -- this is the data that we capture and divide it into 2 32 bit data to write to memory 
-	address1: out std_logic_vector (5 downto 0);   
-	address2: out std_logic_vector (5 downto 0);
+	address1: out std_logic_vector (14 downto 0);   
+	address2: out std_logic_vector (14 downto 0);
 	
     data1:  out std_logic_vector(31 downto 0); -- captured data from the tx line
 	data2:	out std_logic_vector(31 downto 0)
@@ -27,8 +27,8 @@ signal data_reg1: std_logic_vector (31 downto 0):= x"00000000"; --- signal to bu
 signal data_reg2: std_logic_vector (31 downto 0):= x"00000000";--- signal to buffer data 2	
 signal data_out_reg1: std_logic_vector (31 downto 0);
 signal data_out_reg2: std_logic_vector (31 downto 0); 
-signal addr_reg1: std_logic_vector (5 downto 0);
-signal addr_reg2: std_logic_vector (5 downto 0);
+signal addr_reg1: std_logic_vector (14 downto 0);
+signal addr_reg2: std_logic_vector (14 downto 0);
 signal STOP_CAP:  std_logic;   -- stop capture when fifo is full and disable clock
 signal addr_cnt  : integer range 0 to 4096 := 0;
 signal capturing: std_logic := '0';	   
@@ -56,7 +56,7 @@ begin
 					case state is
 						when capture_reg1  =>
 							data_reg1 <= Data_in (63 downto 32);	
-							addr_reg1 <=  std_logic_vector(to_unsigned(addr_cnt,6));
+							addr_reg1 <=  std_logic_vector(to_unsigned(addr_cnt,15));
 							addr_cnt <= addr_cnt + 4 ; 
 							if addr_cnt < 2048 then  
 								state <=  capture_reg2;
@@ -67,7 +67,7 @@ begin
 							
 						when capture_reg2	=>	
 							data_reg2 <= Data_in (31 downto 0);
-							addr_reg2 <=  std_logic_vector(to_unsigned(addr_cnt,6));
+							addr_reg2 <=  std_logic_vector(to_unsigned(addr_cnt,15));
 							addr_cnt <= addr_cnt + 4 ;	
 							
 							if addr_cnt < 2048 then  

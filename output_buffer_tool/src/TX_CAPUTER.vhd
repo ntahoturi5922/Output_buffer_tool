@@ -25,8 +25,7 @@ architecture behavior of TX_CAPUTER is
 type state_machines is ( capture_reg1, capture_reg2);
 signal data_reg1: std_logic_vector (31 downto 0):= x"00000000"; --- signal to buffer data 1	 
 signal data_reg2: std_logic_vector (31 downto 0):= x"00000000";--- signal to buffer data 2	
-signal data_out_reg1: std_logic_vector (31 downto 0);
-signal data_out_reg2: std_logic_vector (31 downto 0); 
+ 
 signal addr_reg1: std_logic_vector (14 downto 0);
 signal addr_reg2: std_logic_vector (14 downto 0);
 signal STOP_CAP:  std_logic;   -- stop capture when fifo is full and disable clock

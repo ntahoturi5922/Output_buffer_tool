@@ -29,6 +29,13 @@ end capture_registers;
 
 architecture behavior of capture_registers is	 
 
+
+
+    type state_type is (rst, wait4trig, store, wait4done);
+    signal write_state: state_type;
+	
+	
+	
 type state_machine is (write_reg1, write_reg2);
 signal state: state_machine	;
 signal write_cnt: integer range 0 to 31 :=0;
@@ -37,7 +44,7 @@ signal cap_data1,cap_data2: std_logic_vector (31 downto 0);
 signal cap_addr1,cap_addr2: std_logic_vector (14 downto 0);
 signal douta_reg: std_logic_vector (31 downto 0);
 signal web_reg: std_logic;
-
+signal reset_reg: std_logic;
 
 signal ADDRARDADDR, ADDRBWRADDR: std_logic_vector(14 downto 0);
 signal wea_i: std_logic_vector(3 downto 0);
@@ -168,41 +175,122 @@ port map (
  DOUTBDOUT => open, 
  DOUTPBDOUTP => open 
 
-);
+);	  
 
-process (clkb,reset)
-begin
-        if reset = '1' then		   --- here we are in reset
-			done_write <= '0';
-			write_cnt <= 0;
-        elsif rising_edge (clkb) then	 --- getting out of reset	
-				done_write <= '1';
-                state <= write_reg1; 
-				write_cnt <= 0;	
-					case state is
-						when write_reg1  =>
-							DINBDIN <= cap_data1;	
-							ADDRBWRADDR <= cap_addr1;
-							write_cnt <= write_cnt +1 ; 
-							if write_cnt = write_cnt then  
-								state <=  write_reg2;
-							else
-								state <=  write_reg1;
-							end if;
+
+    fsm_proc: process(clkb)
+    begin
+        if rising_edge(clkb) then
+
+            reset_reg <= reset; -- assume reset is async to square it up here
+
+            if (reset_reg='1') then
+                web_reg   <= '0';
+                write_state    <= rst;  
+				done_write <= '0';
+			    write_cnt <= 0;
+            else
+                DINBDIN <= cap_data1;
+
+                case write_state is
+                    when rst =>
+                        write_state <= wait4trig;
+                    when wait4trig =>
+                        if (trig='1') then
+                            write_state <= store;
+                            web_reg <= '1';
+                        else
+                            write_state <= wait4trig;
+                            web_reg <= '0';
+                            ADDRBWRADDR <= (others=>'0');
+                        end if;
+                    when store =>
+                        if (ADDRBWRADDR="111111111111111") then
+                            write_state <= wait4done;
+                            web_reg <= '0';
 							
-						when write_reg2  =>
-							DINBDIN <= cap_data2;	
-							ADDRBWRADDR <= cap_addr1;
-							write_cnt <= write_cnt +1 ; 
-							if write_cnt = write_cnt then  
-								state <=  write_reg1;
-							else
-								state <=  write_reg2;
-							end if;							
-					end case;
-         end if;	
+                        else
+                            write_state <= store;	 
+							done_write <= '1';
+							write_cnt <= 0;	
+							if (done_write ='1') then
+								state <= write_reg1;
+								case state is
+									when write_reg1  =>
+										DINBDIN <= cap_data1;	
+										ADDRBWRADDR <= cap_addr1;
+										write_cnt <= write_cnt +1 ; 
+										if write_cnt = write_cnt then  
+											state <=  write_reg2;
+										else
+											state <=  write_reg1;
+										end if;
+							
+									when write_reg2  =>
+										DINBDIN <= cap_data2;	
+										ADDRBWRADDR <= cap_addr2;
+										write_cnt <= write_cnt +1 ; 
+										if write_cnt = write_cnt then  
+											state <=  write_reg1;
+										else
+											state <=  write_reg2;
+										end if;							
+								end case;
+							  end if;
+
+                            web_reg <= '1';
+                        end if;
+                    when wait4done =>
+                        if (trig='0') then
+                            write_state <= wait4trig;
+                        else
+                            write_state <= wait4done;
+                        end if;
+                    when others => 
+                        write_state <= rst;    
+    
+                end case;
+            end if;
+        end if;
+    end process fsm_proc; 
+	
+	
+	
+	
+	
+--process (clkb,reset)
+--begin
+        --if reset = '1' then		   --- here we are in reset
+			--done_write <= '0';
+			--write_cnt <= 0;
+      --  elsif rising_edge (clkb) then	 --- getting out of reset	
+				--done_write <= '1';
+                --state <= write_reg1; 
+				--write_cnt <= 0;	
+					--case state is
+					--	when write_reg1  =>
+						--	DINBDIN <= cap_data1;	
+						--	ADDRBWRADDR <= cap_addr1;
+						--	write_cnt <= write_cnt +1 ; 
+						--	if write_cnt = write_cnt then  
+						--		state <=  write_reg2;
+						--	else
+						--		state <=  write_reg1;
+						--	end if;
+							
+						--when write_reg2  =>
+						--	DINBDIN <= cap_data2;	
+						--	ADDRBWRADDR <= cap_addr1;
+						--	write_cnt <= write_cnt +1 ; 
+						--	if write_cnt = write_cnt then  
+						--		state <=  write_reg1;
+						--	else
+						--		state <=  write_reg2;
+						--	end if;							
+				--	end case;
+       --  end if;	
 					
-    end process;
+  --  end process;
 
   ADDRARDADDR <=  	addra;	
   douta <= 	douta_reg;

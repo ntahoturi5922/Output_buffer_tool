@@ -1,3 +1,2 @@
-ERROR COMP96_0078: "Unknown identifier "RAMB36E2"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 71 16
-ERROR COMP96_0134: "Cannot find component declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 71 16
-WARNING COMP96_0994: "Multiple architecture "tb" of entity "OUT_SPY_BUFF_TB" found in "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd", "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/TX_CAPUTER_TB.vhd"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 8 1
+ERROR COMP96_0078: "Unknown identifier "RAMB36E2"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 78 16
+ERROR COMP96_0134: "Cannot find component declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 78 16

@@ -119,38 +119,39 @@ begin
         S_AXI_ARESETN <= '0';
         wait for 20 ns;
         S_AXI_ARESETN <= '1';
-        
+        trig <= '1';
         -- Write operation
-        S_AXI_AWADDR <= x"00000010";   
+        S_AXI_AWADDR <= x"00000000";   
 		din <= x"deadbeefbabedada";
         S_AXI_AWVALID <= '1';
         S_AXI_WDATA <= x"DEADBEEF";
         S_AXI_WVALID <= '1';
         S_AXI_WSTRB <= "1111";
         
-        wait until S_AXI_AWREADY = '1';
-        wait until S_AXI_WREADY = '1';
+        wait for 20 ns;
+       	trig <= '1';
         
         S_AXI_AWVALID <= '0';
         S_AXI_WVALID <= '0';
         S_AXI_BREADY <= '1';
-        wait until S_AXI_BVALID = '1';
+        wait for 20 ns;
         S_AXI_BREADY <= '0';
-        
+        trig <= '1';
         -- Read operation
-        S_AXI_ARADDR <= x"00000010";
+        S_AXI_ARADDR <= x"00000000";
         S_AXI_ARVALID <= '1';
         
-        wait until S_AXI_ARREADY = '1';
+        wait for 20 ns;
         S_AXI_ARVALID <= '0';
-        S_AXI_RREADY <= '1';
-        wait until S_AXI_RVALID = '1';
+        S_AXI_RREADY <= '1'; 
+		trig <= '1';
+        wait for 20 ns;
         S_AXI_RREADY <= '0';
         
         -- Trigger signal
         trig <= '1';
-        wait for 10 ns;
-        trig <= '0';
+        wait for 20 ns;
+        trig <= '1';
         
         wait;
     end process;

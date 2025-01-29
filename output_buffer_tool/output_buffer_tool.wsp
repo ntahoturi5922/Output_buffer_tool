@@ -2,8 +2,8 @@
 Built-in symbols=0
 output_buffer_tool=0
 [COMPILESTATUS|.\src\TX_CAPUTER.vhd]
-FileTimeLow=3467921697
-FileTimeHigh=31158725
+FileTimeLow=3366809777
+FileTimeHigh=31158931
 Status=Compiled
 [COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
 FileTimeLow=524756663
@@ -24,14 +24,14 @@ FileTimeLow=3794064001
 FileTimeHigh=31158918
 Status=Modified
 [COMPILESTATUS|.\src\Capture_registers.vhd]
-FileTimeLow=2104691192
-FileTimeHigh=31158892
+FileTimeLow=1065057640
+FileTimeHigh=31158931
 Status=Error
 [COMPILESTATUS|.\src\OUT_SPY_BUFF.vhd]
-FileTimeLow=3509484639
-FileTimeHigh=31158918
-Status=Warning
+FileTimeLow=2293124706
+FileTimeHigh=31158933
+Status=Modified
 [COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
-FileTimeLow=1760447459
-FileTimeHigh=31158919
-Status=Compiled
+FileTimeLow=2241679891
+FileTimeHigh=31158936
+Status=Modified

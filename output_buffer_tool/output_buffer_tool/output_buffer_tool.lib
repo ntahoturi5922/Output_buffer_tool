@@ -1,22 +1,33 @@
-timestamp=1738103147017
+timestamp=1738169513208
 
 [~A]
-ModifyID=97
+ModifyID=102
 Version=74
 
 [~MFT]
-0=8|0output_buffer_tool.mgf|158161|146283
-1=2|1output_buffer_tool.mgf|575929|565196
-3=2|3output_buffer_tool.mgf|126887|125517
+0=8|0output_buffer_tool.mgf|168654|150906
+1=2|1output_buffer_tool.mgf|585490|569699
+3=1|3output_buffer_tool.mgf|128798|125517
 
 [capture_registers]
 A/behavior=+21|../src/Capture_registers.vhd|25|1*520157
-I=0*153826
-M=11|2|vf5|1738103003518|../src/Capture_registers.vhd|0*153079*0x7d0dd62230efbdf3834c3954c6f17a775d44f360|0*153727*0x23b75c12e3e89f2ef000564498faa8c2
+I=0*162672
+M=11|2|vf5|1738169072347|../src/Capture_registers.vhd|0*162019*0x9f53b9d285905ede43e4c39330cec76768acd515|0*162573*0x23b75c12e3e89f2ef000564498faa8c2
 M/behavior=21|2|vf5|1738090470770|../src/Capture_registers.vhd|0*78341*0x6d39949bfe270049bbaad6a2fcf3552db0588a33|0*81026*0x20116f55b147878295aeff36dce7fc50
 R=../src/Capture_registers.vhd|8
-Version=15.0.260.9131 (Windows64)|00000003789cd3f5370600015b00b0|94b83afce97ef357c229d85ad5dd6631bdc639ade6de77a3c3b10a4ceae421fdbf5d80b6812cea76da1a32b8b5acb6d3
+Version=15.0.260.9131 (Windows64)|00000003789cd3f5370600015b00b0|94b83afce97ef357c229d85ad5dd6631bdc639ade6de77a3c3b10a4ceae421fd99bb0aecc4bd1fac2bcb6b867bf3b402
 Version/behavior=15.0.260.9131 (Windows64)|00000003789cd3f5370600015b00b0|f9bccf16e2dce5a640f0ad5e8eaa0283e08d679eaf1bc9de9439630905b37e5f03dd57484a80e68a48faf0a4d733c3fd
+
+[out_spy_buff]
+A/behavior=21|../src/OUT_SPY_BUFF.vhd|40|1*585490
+BinW64/behavior=3*128798
+I=0*161510
+I/behavior=0*168654
+M=11|2|vf5|1738168938901|../src/OUT_SPY_BUFF.vhd|0*160373*0x2b2cca74a0d95593cac05fffa364928927398650|0*161421*0x23b75c12e3e89f2ef000564498faa8c2
+M/behavior=21|2|vf5|1738169513194|../src/OUT_SPY_BUFF.vhd|0*164770*0x4cf0c61517f8b425b00b9076a1c2c802721abb1c|0*168553*0x20116f55b147878295aeff36dce7fc50
+R=../src/OUT_SPY_BUFF.vhd|5
+Version=15.0.260.9131 (Windows64)|00000003789cd3f5370600015b00b0|ba4ee325d8c45f3603b6db917689e197716c95351bddee7e5cabb57255326b3a88d870ff0b4c8957dc1377b2ecc630fd
+Version/behavior=15.0.260.9131 (Windows64)|00000003789cd3f5370600015b00b0|f9bccf16e2dce5a640f0ad5e8eaa0283e08d679eaf1bc9de9439630905b37e5f99070ad69fa7ed56f29a6e1e10176bad
 
 [tb_tx_caputer]
 A/behavior=21|../src/TX_CAPUTER_TB.vhd|15|1*575929
@@ -41,6 +52,7 @@ Version=15.0.260.9131 (Windows64)|00000003789cd3f5370600015b00b0|30a2abf3a104882
 Version/behavior=15.0.260.9131 (Windows64)|00000003789cd3f5370600015b00b0|f9bccf16e2dce5a640f0ad5e8eaa0283e08d679eaf1bc9de9439630905b37e5fd6c34b0ad9ac79c5027135b80a2fc368
 
 [~U]
-capture_registers=11|0*152802|
+capture_registers=11|0*161754|
+out_spy_buff=OUT_SPY_BUFF 11|0*160038|
 tb_tx_caputer=TB_TX_CAPUTER 11|0*20692|
 tx_caputer=TX_CAPUTER 11|0*127269|

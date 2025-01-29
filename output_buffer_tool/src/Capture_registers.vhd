@@ -15,9 +15,9 @@ port(
     douta: out std_logic_vector(31 downto 0);
 	reset: in std_logic;
     clkb:  in std_logic;
-    addrb: in std_logic_vector(14 downto 0); -- 2k x 16 writeonly spybuff
-    dinb:  in std_logic_vector(31 downto 0);
-    web:   in std_logic;
+    --addrb: in std_logic_vector(14 downto 0); -- 2k x 16 writeonly spybuff
+    --dinb:  in std_logic_vector(31 downto 0);
+    --web:   in std_logic;
 	--address1: in std_logic_vector (14 downto 0);   
 	--address2: in std_logic_vector (14 downto 0);
 	trig: in std_logic;
@@ -35,8 +35,8 @@ signal write_cnt: integer range 0 to 31 :=0;
 signal done_write: std_logic:='0'  ;
 signal cap_data1,cap_data2: std_logic_vector (31 downto 0);
 signal cap_addr1,cap_addr2: std_logic_vector (14 downto 0);
-
-
+signal douta_reg: std_logic_vector (31 downto 0);
+signal web_reg: std_logic;
 
 
 signal ADDRARDADDR, ADDRBWRADDR: std_logic_vector(14 downto 0);
@@ -150,7 +150,7 @@ port map (
  WEA => wea_i,
  DINADIN => dina, -- 32 bits
  DINPADINP => "0000", -- parity not used
- DOUTADOUT => douta, -- 32 bits
+ DOUTADOUT => douta_reg, -- 32 bits
  DOUTPADOUTP => open,
 
 	-- Port B: spy buffer logic, write only, 2k x 18
@@ -158,7 +158,7 @@ port map (
  CLKBWRCLK => clkb, 
  ADDRBWRADDR => ADDRBWRADDR, -- 15 bits
  ADDRENB => '0', 
- ENBWREN => web, -- when this port is enabled, write
+ ENBWREN => web_reg, -- when this port is enabled, write
  REGCEB => '0', 
  RSTRAMB => '0', 
  RSTREGB => '0', 
@@ -204,6 +204,7 @@ begin
 					
     end process;
 
-  ADDRARDADDR <=  	addra;
+  ADDRARDADDR <=  	addra;	
+  douta <= 	douta_reg;
    
    end behavior;

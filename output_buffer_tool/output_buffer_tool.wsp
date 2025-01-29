@@ -24,6 +24,10 @@ FileTimeLow=1553357682
 FileTimeHigh=31158743
 Status=Modified
 [COMPILESTATUS|.\src\Capture_registers.vhd]
-FileTimeLow=211667600
-FileTimeHigh=31158739
+FileTimeLow=2104691192
+FileTimeHigh=31158892
 Status=Error
+[COMPILESTATUS|.\src\OUT_SPY_BUFF.vhd]
+FileTimeLow=292370723
+FileTimeHigh=31158896
+Status=Warning

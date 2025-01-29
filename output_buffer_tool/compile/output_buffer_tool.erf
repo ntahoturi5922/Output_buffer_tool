@@ -1,0 +1,2 @@
+ERROR COMP96_0078: "Unknown identifier "RAMB36E2"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 71 16
+ERROR COMP96_0134: "Cannot find component declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 71 16

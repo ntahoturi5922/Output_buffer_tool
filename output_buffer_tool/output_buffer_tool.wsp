@@ -20,14 +20,18 @@ Path=
 [Gui config]
 RunFor=100 ns
 [COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
-FileTimeLow=1553357682
-FileTimeHigh=31158743
+FileTimeLow=3794064001
+FileTimeHigh=31158918
 Status=Modified
 [COMPILESTATUS|.\src\Capture_registers.vhd]
 FileTimeLow=2104691192
 FileTimeHigh=31158892
 Status=Error
 [COMPILESTATUS|.\src\OUT_SPY_BUFF.vhd]
-FileTimeLow=292370723
-FileTimeHigh=31158896
+FileTimeLow=3509484639
+FileTimeHigh=31158918
 Status=Warning
+[COMPILESTATUS|.\src\TX_CAPUTER_TB.vhd]
+FileTimeLow=1760447459
+FileTimeHigh=31158919
+Status=Compiled

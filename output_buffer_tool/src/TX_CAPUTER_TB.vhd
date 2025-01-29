@@ -1,248 +1,158 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-library unisim;
-use unisim.vcomponents.all;	
 
+entity OUT_SPY_BUFF_TB is
+end OUT_SPY_BUFF_TB;
 
-
-entity TB_TX_CAPUTER is
--- No ports for a testbench
-end TB_TX_CAPUTER;
-
-
-
-architecture behavior of TB_TX_CAPUTER is
-
-    -- Signals to drive the inputs
-    signal clock      : std_logic := '0';
-    signal reset      : std_logic := '0';
-    signal trig       : std_logic := '0';
-	signal dina : std_logic_vector (31 downto 0):= x"00000000";
-    signal STOP_CAP   : std_logic := '0';
-    signal read_clk: std_logic :='0';
-    --signal write_clk: std_logic :='0';
-    signal empty: std_logic :='0';
-    signal full: std_logic :='0';
-    signal start_read:std_logic :='0';
-    signal fifo_data_out:std_logic_vector (31 downto 0):=x"00000000";
-	--signal address: std_logic_vector (5 downto 0);
-    -- Signal to observe the output
+architecture tb of OUT_SPY_BUFF_TB is
     
-	signal data_in       : std_logic_vector(63 downto 0):=x"0000000000000000";  
-	signal addra : std_logic_vector (14 downto 0):= "000000000000000";
-	signal ena: std_logic:='0';
-	signal web: std_logic:='0';
-	signal wea: std_logic:='0';
-	signal address1:  std_logic_vector (14 downto 0):="000000000000000";   
-	signal address2:  std_logic_vector (14 downto 0):="000000000000000";
-	signal addrb: std_logic_vector (14 downto 0):= "000000000000000";
-	signal dinb: std_logic_vector (31 downto 0):=x"00000000";
-    signal data1:   std_logic_vector(31 downto 0):=x"00000000"; 
-	signal data2:	 std_logic_vector(31 downto 0):=x"00000000";
-    -- Constants
-    constant CLK_PERIOD : time := 6.4 ns; -- 156.5 MHz
-    constant RCLK_PERIOD : time := 10 ns; -- 100 MHz
-    constant WCLK_PERIOD : time := 10 ns; -- 100 MHz
-	type state_machine is (write_reg1, write_reg2);
-	signal state: state_machine	;
-	signal write_cnt: integer range 0 to 31 :=0;
-	signal done_write: std_logic:='0'  ;  
-	
+    component OUT_SPY_BUFF
+    port(
+        clock: in std_logic;
+        trig: in std_logic;
+        din: in std_logic_vector(63 downto 0);
+        S_AXI_ACLK: in std_logic;
+        S_AXI_ARESETN: in std_logic;
+        S_AXI_AWADDR: in std_logic_vector(31 downto 0);
+        S_AXI_AWPROT: in std_logic_vector(2 downto 0);
+        S_AXI_AWVALID: in std_logic;
+        S_AXI_AWREADY: out std_logic;
+        S_AXI_WDATA: in std_logic_vector(31 downto 0);
+        S_AXI_WSTRB: in std_logic_vector(3 downto 0);
+        S_AXI_WVALID: in std_logic;
+        S_AXI_WREADY: out std_logic;
+        S_AXI_BRESP: out std_logic_vector(1 downto 0);
+        S_AXI_BVALID: out std_logic;
+        S_AXI_BREADY: in std_logic;
+        S_AXI_ARADDR: in std_logic_vector(31 downto 0);
+        S_AXI_ARPROT: in std_logic_vector(2 downto 0);
+        S_AXI_ARVALID: in std_logic;
+        S_AXI_ARREADY: out std_logic;
+        S_AXI_RDATA: out std_logic_vector(31 downto 0);
+        S_AXI_RRESP: out std_logic_vector(1 downto 0);
+        S_AXI_RVALID: out std_logic;
+        S_AXI_RREADY: in std_logic
+    );
+    end component;
+    
+    signal clock: std_logic := '0';
+    signal trig: std_logic := '0';
+    signal din: std_logic_vector(63 downto 0) := (others => '0');
+    signal S_AXI_ACLK: std_logic := '0';
+    signal S_AXI_ARESETN: std_logic := '0';
+    signal S_AXI_AWADDR: std_logic_vector(31 downto 0) := (others => '0');
+    signal S_AXI_AWPROT: std_logic_vector(2 downto 0) := (others => '0');
+    signal S_AXI_AWVALID: std_logic := '0';
+    signal S_AXI_AWREADY: std_logic;
+    signal S_AXI_WDATA: std_logic_vector(31 downto 0) := (others => '0');
+    signal S_AXI_WSTRB: std_logic_vector(3 downto 0) := (others => '0');
+    signal S_AXI_WVALID: std_logic := '0';
+    signal S_AXI_WREADY: std_logic;
+    signal S_AXI_BRESP: std_logic_vector(1 downto 0);
+    signal S_AXI_BVALID: std_logic;
+    signal S_AXI_BREADY: std_logic := '0';
+    signal S_AXI_ARADDR: std_logic_vector(31 downto 0) := (others => '0');
+    signal S_AXI_ARPROT: std_logic_vector(2 downto 0) := (others => '0');
+    signal S_AXI_ARVALID: std_logic := '0';
+    signal S_AXI_ARREADY: std_logic;
+    signal S_AXI_RDATA: std_logic_vector(31 downto 0);
+    signal S_AXI_RRESP: std_logic_vector(1 downto 0);
+    signal S_AXI_RVALID: std_logic;
+    signal S_AXI_RREADY: std_logic := '0';
+    
 begin
-
-    -- Instantiate the Unit Under Test (UUT)
-    uut1: entity work.TX_CAPUTER
-        port map (
-            clock      => clock,
-            reset      => reset,
-            trig       => trig,
-			
-    		Data_in  =>	data_in,
-            --STOP_CAP   => STOP_CAP,
-            address1    =>   address1 ,
-			address2    => 	address2,
-	
-    		data1    =>   data1,
-			data2    => data2
-        );
-        
-    uut2: entity work.capture_registers
-port map(
-    clka      => read_clk,
-    addra    => addra,-- 1k x 32 R/W axi
-    dina    =>dina,
-    ena    =>  ena,	
-	data_in  =>	data_in,
-	trig       => trig,
-    wea    => wea ,
-    douta    => fifo_data_out,
-	reset    =>	 reset,
-    clkb    => clock,
-    addrb    => addrb, -- 2k x 16 writeonly spybuff
-    dinb    =>	dinb,
-    web    =>  web
-	--address1    =>  address1 ,
-	--address2    => address2,
-	
-   -- data1    => data1,-- captured data from the tx line
-	--data2    =>	 data2
-  --
-  );
-
-
-	
-	
-	
-	
-	
-	-- Clock generation process
-    clk_process: process
+    -- DUT instantiation
+    uut: OUT_SPY_BUFF
+    port map(
+        clock => clock,
+        trig => trig,
+        din => din,
+        S_AXI_ACLK => S_AXI_ACLK,
+        S_AXI_ARESETN => S_AXI_ARESETN,
+        S_AXI_AWADDR => S_AXI_AWADDR,
+        S_AXI_AWPROT => S_AXI_AWPROT,
+        S_AXI_AWVALID => S_AXI_AWVALID,
+        S_AXI_AWREADY => S_AXI_AWREADY,
+        S_AXI_WDATA => S_AXI_WDATA,
+        S_AXI_WSTRB => S_AXI_WSTRB,
+        S_AXI_WVALID => S_AXI_WVALID,
+        S_AXI_WREADY => S_AXI_WREADY,
+        S_AXI_BRESP => S_AXI_BRESP,
+        S_AXI_BVALID => S_AXI_BVALID,
+        S_AXI_BREADY => S_AXI_BREADY,
+        S_AXI_ARADDR => S_AXI_ARADDR,
+        S_AXI_ARPROT => S_AXI_ARPROT,
+        S_AXI_ARVALID => S_AXI_ARVALID,
+        S_AXI_ARREADY => S_AXI_ARREADY,
+        S_AXI_RDATA => S_AXI_RDATA,
+        S_AXI_RRESP => S_AXI_RRESP,
+        S_AXI_RVALID => S_AXI_RVALID,
+        S_AXI_RREADY => S_AXI_RREADY
+    );
+    
+    -- Clock process
+    process
     begin
         while true loop
             clock <= '0';
-            wait for CLK_PERIOD / 2;
+            wait for 3.2 ns;
             clock <= '1';
-            wait for CLK_PERIOD / 2;
+            wait for 3.2 ns;
         end loop;
     end process;
-
-
-    Rclk_process: process
+    
+    S_AXI_ACLK_process: process
     begin
         while true loop
-            read_clk <= '0';
-            wait for RCLK_PERIOD / 2;
-            read_clk <= '1';
-            wait for RCLK_PERIOD / 2;
+            S_AXI_ACLK <= '0';
+            wait for 5 ns;
+            S_AXI_ACLK <= '1';
+            wait for 5 ns;
         end loop;
     end process;
-	
-	
-	
-	
-	
-   process (clock,reset)
-begin
-        if reset = '1' then		   --- here we are in reset
-			done_write <= '0';
-			write_cnt <= 0;
-        elsif rising_edge (clock) then	 --- getting out of reset	
-				done_write <= '1';
-                state <= write_reg1; 
-				write_cnt <= 0;	
-					case state is
-						when write_reg1  =>
-							dinb <= data1;	
-							addrb <= address1;
-							write_cnt <= write_cnt +1 ; 
-							if write_cnt = write_cnt then  
-								state <=  write_reg2;
-							else
-								state <=  write_reg1;
-							end if;
-							
-						when write_reg2  =>
-							dinb <= data2;	
-							addrb <= address2;
-							write_cnt <= write_cnt +1 ; 
-							if write_cnt = write_cnt then  
-								state <=  write_reg1;
-							else
-								state <=  write_reg2;
-							end if;							
-					end case;
-         end if;	
-					
-    end process;  
-	
-	
-	
-
+    
     -- Stimulus process
-    stimulus_process: process
+    process
     begin
-        -- Reset the UUT
-        reset <= '1';
-        wait for 10 ns;
-        reset <= '0';
-
-        -- Wait for some clock cycles
+        -- Reset the system
+        S_AXI_ARESETN <= '0';
         wait for 20 ns;
-
-        -- Apply trigger
+        S_AXI_ARESETN <= '1';
+        
+        -- Write operation
+        S_AXI_AWADDR <= x"00000010";   
+		din <= x"deadbeefbabedada";
+        S_AXI_AWVALID <= '1';
+        S_AXI_WDATA <= x"DEADBEEF";
+        S_AXI_WVALID <= '1';
+        S_AXI_WSTRB <= "1111";
+        
+        wait until S_AXI_AWREADY = '1';
+        wait until S_AXI_WREADY = '1';
+        
+        S_AXI_AWVALID <= '0';
+        S_AXI_WVALID <= '0';
+        S_AXI_BREADY <= '1';
+        wait until S_AXI_BVALID = '1';
+        S_AXI_BREADY <= '0';
+        
+        -- Read operation
+        S_AXI_ARADDR <= x"00000010";
+        S_AXI_ARVALID <= '1';
+        
+        wait until S_AXI_ARREADY = '1';
+        S_AXI_ARVALID <= '0';
+        S_AXI_RREADY <= '1';
+        wait until S_AXI_RVALID = '1';
+        S_AXI_RREADY <= '0';
+        
+        -- Trigger signal
         trig <= '1';
         wait for 10 ns;
         trig <= '0';
-		STOP_CAP <= '0';
-        -- Simulate TX_CAP_P and TX_CAP_N toggling
-		data_in <= X"00000000bababeef";	
-		ena <='0'; 
-		wea <='1';
-		--address<= "000000"	;
-		wait for 10 ns 	;
-		
-		
-		data_in <= X"beefbaba00000000";	
-		ena <='0'; 
-		wea <='1';
-		--address<= "000001";
-		wait for 10 ns	;
-		
-		data_in <= X"00000000cafebabe";	
-		ena <='0'; 
-		wea <='1';		
-		--address<= "000010";
-		wait for 10 ns	;
-		
-		data_in <= X"babecafe00000000";	
-		ena <='0'; 
-		wea <='1';	
-		web <= '1';
-		
-		--address<= "000011";
-		wait for 10 ns	;
-		
-		data_in <= X"00000000deadbeef";	 
-		ena <='0'; 
-		wea <='1';	  
-		
-		wait for 10 ns	;
-								
-		data_in <= X"beefdead00000000";	 
-		ena <='0'; 
-		wea <='1';	
-		
-		--address<= "000110";
-		wait for 10 ns	  ;
-		
-		data_in <= X"00000000dadabeef";	
-		ena <='1'; 
-		wea <='0'; 
-		
-		--address<= "000101";
-		wait for 30 ns	; 
-		ena <='1'; 
-		wea <='0';
- 		addra <= "000000000000100" ;
-		wait for 30 ns	;
-		ena <='1'; 
-		wea <='0';
-		addra <= "000000000001000" ;
-		wait for 30 ns	;  
-		ena <='1'; 
-		wea <='0';
-		addra <= "000000000001100" ;
-		wait for 30 ns	;
-
-        -- Stop capture
-        STOP_CAP <= '0';
-        wait for 50 ns;
-        trig <= '0'; 
-		ena <='0'; 
-		wea <='0';
-        -- Stop simulation
+        
         wait;
     end process;
-
-end behavior;
+    
+end tb;

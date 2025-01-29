@@ -22,11 +22,13 @@ FAMILY=Xilinx2022x Zynq_UltraScale+
 /TX_CAPUTER_TB.vhd=-1
 /Capture_registers.vhd=-1
 /OUT_SPY_BUFF.vhd=-1
+/TX_CAPUTER_TB.vhd=-1
 [Files.Data]
 .\src\TX_CAPUTER.vhd=VHDL Source Code
 .\src\TX_CAPUTER_TB.vhd=VHDL Source Code
 .\src\Capture_registers.vhd=VHDL Source Code
 .\src\OUT_SPY_BUFF.vhd=VHDL Source Code
+.\src\TX_CAPUTER_TB.vhd=VHDL Source Code
 [HierarchyViewer]
 HierarchyInformation=
 ShowHide=ShowTopLevel

@@ -1,91 +1,153 @@
+-- spybuff.vhd
+--
+-- DAPHNE spy buffer for one link AFE output, stores 4k 16-bit samples
+-- reset only resets the trigger logic, it does not erase the buffer contents
+-- triggered on low to to high pulse, then writes next 2048 words into buffer, stops and waits for next trigger
+-- add delay elements to produce 64 deep delay for fixed pretrigger
+--
+-- The "A" port on this buffer is intended to connect to the AXI-Lite interface
+--
+-- Jamieson Olsen <jamieson@fnal.gov>
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
---library unisim;
---use unisim.vcomponents.all;
+library unisim;
+use unisim.vcomponents.all;
 
 entity TX_CAPUTER is
 port(
-    clock: in std_logic; -- master clock --156.5MHZ
-    reset: in std_logic; -- active high reset asyn -- only when reset this module works
-    trig:  in std_logic; -- trigger pulse sync to clock  -- from the trigger module	 
-	Data_in: in std_logic_vector (63 downto 0); -- this is the data that we capture and divide it into 2 32 bit data to write to memory 
-	address1: out std_logic_vector (14 downto 0);   
-	address2: out std_logic_vector (14 downto 0);
-	
-    data1:  out std_logic_vector(31 downto 0); -- captured data from the tx line
-	data2:	out std_logic_vector(31 downto 0)
-  
+    clock: in std_logic; -- master clock
+    reset: in std_logic; -- active high reset async
+    trig:  in std_logic; -- trigger pulse sync to clock
+    data:  in std_logic_vector(15 downto 0); -- afe data sync to clock
+
+    clka:  in  std_logic;
+    addra: in  std_logic_vector(9 downto 0); -- 1k x 32 R/W
+	ena:   in  std_logic;
+	wea:   in  std_logic;
+	dina:  in  std_logic_vector(31 downto 0);
+    douta: out std_logic_vector(31 downto 0)  
   );
 end TX_CAPUTER;
 
-architecture behavior of TX_CAPUTER is	 
+architecture behavior of TX_CAPUTER is
 
-type state_machines is ( capture_reg1, capture_reg2);
-signal data_reg1: std_logic_vector (31 downto 0):= x"00000000"; --- signal to buffer data 1	 
-signal data_reg2: std_logic_vector (31 downto 0):= x"00000000";--- signal to buffer data 2	
- 
-signal addr_reg1: std_logic_vector (14 downto 0);
-signal addr_reg2: std_logic_vector (14 downto 0);
-signal STOP_CAP:  std_logic;   -- stop capture when fifo is full and disable clock
-signal addr_cnt  : integer range 0 to 4096 := 0;
-signal capturing: std_logic := '0';	   
-signal state: state_machines; 
+    signal reset_reg: std_logic;
+    signal addr_reg: std_logic_vector(10 downto 0);
+    signal data_reg, data_q, data_delayed: std_logic_vector(31 downto 0);
+    signal we_reg:   std_logic;
+
+    type state_type is (rst, wait4trig, store, wait4done);
+    signal state: state_type;
+
+	component capture_registers
+	port (
+			clka:  in  std_logic;
+			addra: in  std_logic_vector( 9 downto 0); -- 1k x 32 R/W axi
+	        dina:  in  std_logic_vector(31 downto 0);
+	        ena:   in  std_logic;
+	        wea:   in  std_logic;
+	        douta: out std_logic_vector(31 downto 0);
+	        clkb:  in  std_logic;
+	        addrb: in  std_logic_vector(10 downto 0); -- 2k x 16 writeonly spybuff
+	        dinb:  in  std_logic_vector(31 downto 0);
+	        web:   in  std_logic
+		);
+	end component;
+
 begin
 
-    process(clock, reset)
+    -- input delay elements for fixed pre-trigger cascade two 32 bit shift registers
+	-- for a total pre-trigger delay of 64 clocks
+
+    gendelay: for i in 31 downto 0 generate
+
+        srlc32e_0_inst : srlc32e
+        port map(
+            clk => clock,
+            ce => '1',
+            a => "11111",
+            d => data(i),
+            q => open,
+            q31 => data_q(i)  
+        );
+    
+        srlc32e_1_inst : srlc32e
+        port map(
+            clk => clock,
+            ce => '1',
+            a => "11111",
+            d => data_q(i),
+            q => data_delayed(i),
+            q31 => open  
+        );
+
+    end generate gendelay;
+
+    -- FSM to wait for trigger pulse and drive addr_reg (write pointer) and we_reg
+
+    fsm_proc: process(clock)
     begin
-        if reset = '1' then		   --- here we are in reset
-            data_reg1 <= (others => '0'); 
-			data_reg2 <= (others => '0');
-			addr_reg1 <= (others => '0');
-			addr_reg2 <= (others => '0');
-            addr_cnt  <= 0;
-            capturing <= '0';
-			STOP_CAP <= '1';
-        elsif rising_edge(clock) then	 --- getting out of reset	
-			STOP_CAP<= '0';
-            if STOP_CAP = '0' then	  -- wait for the stop capturing signal to go low
-                if trig = '1' then		--- wait for the trigger from the triger module
-                    capturing <= '1';  -- Start capturing
-                end if;
-                state <= capture_reg1; 
-                if capturing = '1' then	
-					case state is
-						when capture_reg1  =>
-							data_reg1 <= Data_in (63 downto 32);	
-							addr_reg1 <=  std_logic_vector(to_unsigned(addr_cnt,15));
-							addr_cnt <= addr_cnt + 4 ; 
-							if addr_cnt < 2048 then  
-								state <=  capture_reg2;
-							else
-								STOP_CAP <= '1';
-								capturing <= '0';
-							end if;
-							
-						when capture_reg2	=>	
-							data_reg2 <= Data_in (31 downto 0);
-							addr_reg2 <=  std_logic_vector(to_unsigned(addr_cnt,15));
-							addr_cnt <= addr_cnt + 4 ;	
-							
-							if addr_cnt < 2048 then  
-								state <=  capture_reg1;
-							else
-								STOP_CAP <= '1';
-								capturing <= '0';
-							end if;							
-					end case;
-                end if;	
-					
+        if rising_edge(clock) then
+
+            reset_reg <= reset; -- assume reset is async to square it up here
+
+            if (reset_reg='1') then
+                we_reg   <= '0';
+                state    <= rst;
+            else
+                data_reg <= data_delayed;
+
+                case state is
+                    when rst =>
+                        state <= wait4trig;
+                    when wait4trig =>
+                        if (trig='1') then
+                            state <= store;
+                            we_reg <= '1';
+                        else
+                            state <= wait4trig;
+                            we_reg <= '0';
+                            addr_reg <= (others=>'0');
+                        end if;
+                    when store =>
+                        if (addr_reg="11111111111") then
+                            state <= wait4done;
+                            we_reg <= '0';
+                        else
+                            state <= store;
+                            addr_reg <= std_logic_vector(unsigned(addr_reg) + 1);
+                            we_reg <= '1';
+                        end if;
+                    when wait4done =>
+                        if (trig='0') then
+                            state <= wait4trig;
+                        else
+                            state <= wait4done;
+                        end if;
+                    when others => 
+                        state <= rst;    
+    
+                end case;
             end if;
         end if;
-    end process;
+    end process fsm_proc;
 
-	address1 <= addr_reg1;   
-	address2 <= addr_reg2;
-	
-    data1 <= data_reg1; -- captured data from the tx line
-	data2 <= data_reg2;    
+	spyram_inst: capture_registers
+	port map(
+		clka => clka, -- Port A R/W access from AXI master, 2k x 32
+		addra => addra,
+		dina => dina,
+		ena => ena,
+		wea => wea,
+		douta => douta,
+
+		clkb => clock, -- Port B written to by THIS logic
+		addrb => addr_reg, -- 11 bit write address
+		dinb => data_reg,
+		web => we_reg
+	);
 
 end behavior;

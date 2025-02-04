@@ -1,2 +1,22 @@
-ERROR COMP96_0078: "Unknown identifier "RAMB36E2"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 78 16
-ERROR COMP96_0134: "Cannot find component declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 78 16
+ERROR ELAB1_0028: "Entity port length is 8. addra length is 10." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/TX_CAPUTER.vhd" 138 0
+ERROR ELAB1_0011: "Port "timestamp" is on entity "OUT_SPY_BUFF" but not on the component declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/TX_CAPUTER_TB.vhd" 96 0
+ERROR COMP96_0111: "Labels do not match." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 39 5
+ERROR COMP96_0664: "Value 9 out of range 7 downto 0." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 52 22
+ERROR COMP96_0078: "Unknown identifier "addrb"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 57 16
+ERROR COMP96_0133: "Cannot find object declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 57 16
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 57 16
+ERROR COMP96_0078: "Unknown identifier "dinb"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 58 13
+ERROR COMP96_0133: "Cannot find object declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 58 13
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 58 13
+ERROR COMP96_0078: "Unknown identifier "RAMB36E2"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 60 17
+ERROR COMP96_0134: "Cannot find component declaration." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/Capture_registers.vhd" 60 17
+WARNING ELAB1_0026: "There is no default binding for component "spybuff". (No entity named "spybuff" was found)." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 93 0
+ERROR COMP96_0367: "Improper array length (64). Expected length is 16." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 98 22
+ERROR COMP96_0122: "Symbol "spybuffer_inst" has already been declared in this scope." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 117 9
+ERROR COMP96_0078: "Unknown identifier "t"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 122 36
+ERROR COMP96_0078: "Unknown identifier "t"." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 122 51
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 374 19
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 375 22
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 376 22
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 378 19
+ERROR COMP96_0077: "Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'." "C:/My_Designs/Output_buffer_tool/output_buffer_tool/src/OUT_SPY_BUFF.vhd" 378 111

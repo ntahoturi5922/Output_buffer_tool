@@ -1,15 +1,17 @@
+
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+--use work.daphne3_package.all;
+
 entity OUT_SPY_BUFF is
 port(
-	clock: in std_logic; -- master clock 156.25MHZ	  
-	--reset: in std_logic;
-    trig:  in std_logic; -- trigger pulse sync to clock	
-	
-    din:   in std_logic_vector(63 downto 0);
-    
+    clock: in std_logic; -- master clock
+    trig:  in std_logic; -- trigger pulse sync to clock
+    din:   in std_logic_vector(63 downto 0); 
+    timestamp: in std_logic_vector(63 downto 0); 
     
     -- AXI-LITE interface
 
@@ -39,7 +41,6 @@ end OUT_SPY_BUFF;
 
 architecture behavior of OUT_SPY_BUFF is
 
-
 	signal axi_awaddr: std_logic_vector(31 downto 0);
 	signal axi_awready: std_logic;
 	signal axi_wready: std_logic;
@@ -55,37 +56,84 @@ architecture behavior of OUT_SPY_BUFF is
 
 	signal rden, wren: std_logic;
 	signal aw_en: std_logic;
-    signal addra: std_logic_vector(14 downto 0);
+    signal addra: std_logic_vector(9 downto 0);
     signal ram_dout: std_logic_vector(31 downto 0);
-	
+
     signal reset: std_logic;
-    signal ena, wea:  std_logic;
+    signal ena, wea: std_logic;
     signal douta: std_logic_vector(31 downto 0);
     signal ts_ena, ts_wea: std_logic_vector(3 downto 0);
     signal ts_douta: std_logic_vector(31 downto 0);
-	
-	
-	    component capture_registers is
+
+    component spybuff is
     port(
-    clka:  in std_logic;
-    addra: in std_logic_vector( 14 downto 0); -- 1k x 32 R/W axi
-    dina:  in std_logic_vector(31 downto 0);
-    ena:   in std_logic;
-    wea:   in std_logic;
-    douta: out std_logic_vector(31 downto 0);
-	reset: in std_logic;
-    clkb:  in std_logic;
-    --addrb: in std_logic_vector(14 downto 0); -- 2k x 16 writeonly spybuff
-    --dinb:  in std_logic_vector(31 downto 0);
-    --web:   in std_logic;
-	trig: in std_logic;
-  	data_in :in std_logic_vector (63 downto 0)   
+        clock: in std_logic;
+        reset: in std_logic;
+        trig:  in std_logic;
+        data:  in std_logic_vector(15 downto 0);
+        clka:  in  std_logic;
+        addra: in  std_logic_vector(9 downto 0);
+    	ena:   in  std_logic;
+    	wea:   in  std_logic;
+    	dina:  in  std_logic_vector(31 downto 0);
+        douta: out std_logic_vector(31 downto 0)  
       );
     end component;
-	
-	
+
 begin
-	
+
+    reset <= not S_AXI_ARESETN;
+
+    -- 45 spy buffers (5 AFEs x 9 channels/AFE)
+    -- channels 0-7 are AFE data 
+    -- channel 8 is the frame marker pattern
+    
+
+    
+        spybuffer_inst: spybuff
+        port map(
+            clock => clock,
+            reset => reset,
+            trig  => trig,
+            data  => din,
+    
+            clka => S_AXI_ACLK,
+            addra => addra,
+        	ena => ena,
+        	wea => wea,
+        	dina => S_AXI_WDATA, 
+            douta => douta
+          );
+    
+
+    
+    -- 4 more spy buffers to store the 64 bit timestamp
+    -- the 64 bit timestamp is "striped" across four spy buffers
+    -- e.g. the first spy buffer stores timestamp bits(15..0)
+    -- the next spy buffer stores timestamp bits(32..16) and so on
+    
+   
+    
+        spybuffer_inst: spybuff
+        port map(
+            clock => clock,
+            reset => reset,
+            trig  => trig,
+            data  => timestamp( 16*t+15 downto 16*t ),
+    
+            clka => S_AXI_ACLK,
+            addra => addra,
+        	ena => ts_ena,
+        	wea => ts_wea, 
+        	dina => S_AXI_WDATA,
+            douta => ts_douta
+          );
+    
+    
+
+    -- following code derived from Xilinx AXI-LITE slave example design
+    -- modified to add one clock cycle read latency on the axi_arready signal
+    
 	S_AXI_AWREADY	<= axi_awready;
 	S_AXI_WREADY	<= axi_wready;
 	S_AXI_BRESP	    <= axi_bresp;
@@ -94,28 +142,12 @@ begin
 	S_AXI_RDATA	    <= axi_rdata;
 	S_AXI_RRESP	    <= axi_rresp;
 	S_AXI_RVALID	<= axi_rvalid;
-	reset <= not S_AXI_ARESETN;
-	
-	
-	cap_reg_ins: capture_registers 
-	port map(
-    			clka  	  => S_AXI_ACLK	,
-    			addra 	  => addra	,
-    			dina 	 => S_AXI_WDATA	  ,
-    			ena 	 =>  ena  ,
-    			wea 	  => wea ,
-    			douta	  => douta ,
-				reset 	 => reset ,
-    			clkb	 =>   clock	,
-    			--addrb   => 
-    			--dinb    => 
-    			--web	    => 
-				trig   => trig ,
-  				data_in  => din	 
-				  
-				  );	   
-				  
-				  
+
+	-- Implement axi_awready generation
+	-- axi_awready is asserted for one S_AXI_ACLK clock cycle when both
+	-- S_AXI_AWVALID and S_AXI_WVALID are asserted. axi_awready is
+	-- de-asserted when reset is low.
+
 	process (S_AXI_ACLK)
 	begin
 	  if rising_edge(S_AXI_ACLK) then 
@@ -302,25 +334,61 @@ begin
 	  end if;
 	end process;
 
-    -- create the necessary enables  to connect buffers
+    -- create the necessary enables and muxes to connect 45 + 4 spy buffers
     -- to the AXI bus 
 
- 
+    -- AXI address bus refers to byte locations
+    -- Spybuffer address bus refers to 32-bit word locations
+    --
+    -- AXI address base+0 = AFE 0 channel 0 (sample1(15..0) & sample0(15..0))
+    -- AXI address base+4 = AFE 0 channel 0 (sample3(15..0) & sample2(15..0))
+    -- AXI address base+8 = AFE 0 channel 0 (sample5(15..0) & sample4(15..0))
+    --
+    -- address decoding use axi address bits (18 downto 13)
+    -- 0x00000-0x01FFC = 0000 000X XXXX XXXX XX00
+    -- 0x02000-0x03FFC = 0000 001X XXXX XXXX XX00
+    -- ...
+    -- 0x60000-0x61FFC = 0110 000X XXXX XXXX XX00 
+    --
+    -- SpyBuffer address is 1k (10 bits, 9..0), maps into axi address bits (11 downto 2)
 
-    addra <=  axi_araddr(14 downto 0);
-	
-	
+    addra <= axi_awaddr(11 downto 2) when (wren='1') else 
+    	     axi_araddr(11 downto 2);
+
+    -- enable and write enable generation for AFE spybuffers, 45 blocks 0-44
+    
+
+    
         ena <= '1' when ( axi_arvalid='1' and axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else 
                      '1' when ( wren='1'        and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else 
                      '0';
         
-        wea <= '1' when ( wren='1' and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else '0';	
-				  
+        wea <= '1' when ( wren='1' and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else '0';
+    
+ 
 
- ram_dout <= douta when ( axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else (others=>'Z');
+    -- enable and write enable generation for TS spybuffers, 4 blocks 45-48
 
+   
 
+        ts_ena <= '1' when ( axi_arvalid='1' and axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else 
+                     '1' when ( wren='1'        and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else 
+                     '0';
         
-	  
-				  
-end;
+        ts_wea <= '1' when ( wren='1' and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else '0';
+
+    
+	
+    -- big mux for AXI reads from 45 AFE spybuffers and 4 TS spybuffers
+    
+
+
+        ram_dout <= douta when ( axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else (others=>'Z');
+
+
+
+        ram_dout <= ts_douta when ( axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else (others=>'Z');
+
+    
+
+end behavior;

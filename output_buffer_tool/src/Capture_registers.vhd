@@ -1,3 +1,20 @@
+-- spyram
+-- true dual port RAM, independent clocks
+-- uses one 36kbit BlockRAM
+-- port a = 1k x 32(36) is read/write (for axi access)
+-- port b = 2k x 16(18) is write only (for spybuff writing)
+--
+-- Jamieson Olsen <jamieson@fnal.gov>
+-- 
+-- Example 16/32 bit word mapping: 
+--
+-- SpyBuff writes 0xAAAA to addrb 0
+-- SpyBuff writes 0xBBBB to addrb 1
+-- SpyBuff writes 0xCCCC to addrb 2
+-- SpyBuff writes 0xDDDD to addrb 3
+-- AXI reads 0xBBBBAAAA from addra 0
+-- AXI reads 0xDDDDCCCC from addra 1
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -6,76 +23,41 @@ library unisim;
 use unisim.vcomponents.all;
 
 entity capture_registers is
-port(
+port (
     clka:  in std_logic;
-    addra: in std_logic_vector( 14 downto 0); -- 1k x 32 R/W axi
+    addra: in std_logic_vector( 9 downto 0); -- 1k x 32 R/W axi
     dina:  in std_logic_vector(31 downto 0);
     ena:   in std_logic;
     wea:   in std_logic;
     douta: out std_logic_vector(31 downto 0);
-	reset: in std_logic;
+
     clkb:  in std_logic;
-    --addrb: in std_logic_vector(14 downto 0); -- 2k x 16 writeonly spybuff
-    --dinb:  in std_logic_vector(31 downto 0);
-    --web:   in std_logic;
-	--address1: in std_logic_vector (14 downto 0);   
-	--address2: in std_logic_vector (14 downto 0);
-	trig: in std_logic;
-    --data1:  in std_logic_vector(31 downto 0); -- captured data from the tx line
-	--data2:	in std_logic_vector(31 downto 0)
-  	data_in :in std_logic_vector (63 downto 0)  
-  );
+    addrb: in std_logic_vector(10 downto 0); -- 2k x 16 writeonly spybuff
+    dinb:  in std_logic_vector(31 downto 0);
+    web:   in std_logic
+	);
 end capture_registers;
 
-architecture behavior of capture_registers is	 
-
-
-
-    type state_type is (rst, wait4trig, store, wait4done);
-    signal write_state: state_type;
-	
-	
-	
-type state_machine is (write_reg1, write_reg2);
-signal state: state_machine	;
-signal write_cnt: integer range 0 to 31 :=0;
-signal done_write: std_logic:='0'  ;
-signal cap_data1,cap_data2: std_logic_vector (31 downto 0);
-signal cap_addr1,cap_addr2: std_logic_vector (14 downto 0);
-signal douta_reg: std_logic_vector (31 downto 0);
-signal web_reg: std_logic;
-signal reset_reg: std_logic;
+architecture behavior of capture_registers is
 
 signal ADDRARDADDR, ADDRBWRADDR: std_logic_vector(14 downto 0);
 signal wea_i: std_logic_vector(3 downto 0);
 
 signal DINBDIN: std_logic_vector(31 downto 0);
 
+begin
 
+-- Port A glue logic: AXI-LITE R/W access, 1k x 32
 
+ADDRARDADDR <= addra(9 downto 0) & "00000";
+wea_i <= "1111" when ( wea='1' ) else "0000";
 
-begin  
-	
-wea_i <= "1111" when ( wea='1' ) else "0000";	
-	  
-    capture_componet: entity work.TX_CAPUTER
-        port map (
-            clock      => clkb,
-            reset      => reset,
-            trig       => trig,
-			
-    		Data_in  =>	data_in,
-            --STOP_CAP   => STOP_CAP,
-            address1    =>   cap_addr1 ,
-			address2    => 	cap_addr2,
-	
-    		data1    =>   cap_data1,
-			data2    => cap_data2
-        );
-	
+-- Port B glue logic: Spy Buffer logic access, write only, 2k x 16
 
+ADDRBWRADDR <= addrb(10 downto 0) & "0000";
+DINBDIN <=  dinb;
 
-SPY_RAM_inst : RAMB36E2
+RAMB36E2_inst : RAMB36E2
 generic map (
  CASCADE_ORDER_A => "NONE",
  CASCADE_ORDER_B => "NONE",
@@ -157,7 +139,7 @@ port map (
  WEA => wea_i,
  DINADIN => dina, -- 32 bits
  DINPADINP => "0000", -- parity not used
- DOUTADOUT => douta_reg, -- 32 bits
+ DOUTADOUT => douta, -- 32 bits
  DOUTPADOUTP => open,
 
 	-- Port B: spy buffer logic, write only, 2k x 18
@@ -165,7 +147,7 @@ port map (
  CLKBWRCLK => clkb, 
  ADDRBWRADDR => ADDRBWRADDR, -- 15 bits
  ADDRENB => '0', 
- ENBWREN => web_reg, -- when this port is enabled, write
+ ENBWREN => web, -- when this port is enabled, write
  REGCEB => '0', 
  RSTRAMB => '0', 
  RSTREGB => '0', 
@@ -175,124 +157,7 @@ port map (
  DOUTBDOUT => open, 
  DOUTPBDOUTP => open 
 
-);	  
+);
 
 
-    fsm_proc: process(clkb)
-    begin
-        if rising_edge(clkb) then
-
-            reset_reg <= reset; -- assume reset is async to square it up here
-
-            if (reset_reg='1') then
-                web_reg   <= '0';
-                write_state    <= rst;  
-				done_write <= '0';
-			    write_cnt <= 0;
-            else
-                DINBDIN <= cap_data1;
-
-                case write_state is
-                    when rst =>
-                        write_state <= wait4trig;
-                    when wait4trig =>
-                        if (trig='1') then
-                            write_state <= store;
-                            web_reg <= '1';
-                        else
-                            write_state <= wait4trig;
-                            web_reg <= '0';
-                            ADDRBWRADDR <= (others=>'0');
-                        end if;
-                    when store =>
-                        if (ADDRBWRADDR="111111111111111") then
-                            write_state <= wait4done;
-                            web_reg <= '0';
-							
-                        else
-                            write_state <= store;	 
-							done_write <= '1';
-							write_cnt <= 0;	
-							if (done_write ='1') then
-								state <= write_reg1;
-								case state is
-									when write_reg1  =>
-										DINBDIN <= cap_data1;	
-										ADDRBWRADDR <= cap_addr1;
-										write_cnt <= write_cnt +1 ; 
-										if write_cnt = write_cnt then  
-											state <=  write_reg2;
-										else
-											state <=  write_reg1;
-										end if;
-							
-									when write_reg2  =>
-										DINBDIN <= cap_data2;	
-										ADDRBWRADDR <= cap_addr2;
-										write_cnt <= write_cnt +1 ; 
-										if write_cnt = write_cnt then  
-											state <=  write_reg1;
-										else
-											state <=  write_reg2;
-										end if;							
-								end case;
-							  end if;
-
-                            web_reg <= '1';
-                        end if;
-                    when wait4done =>
-                        if (trig='0') then
-                            write_state <= wait4trig;
-                        else
-                            write_state <= wait4done;
-                        end if;
-                    when others => 
-                        write_state <= rst;    
-    
-                end case;
-            end if;
-        end if;
-    end process fsm_proc; 
-	
-	
-	
-	
-	
---process (clkb,reset)
---begin
-        --if reset = '1' then		   --- here we are in reset
-			--done_write <= '0';
-			--write_cnt <= 0;
-      --  elsif rising_edge (clkb) then	 --- getting out of reset	
-				--done_write <= '1';
-                --state <= write_reg1; 
-				--write_cnt <= 0;	
-					--case state is
-					--	when write_reg1  =>
-						--	DINBDIN <= cap_data1;	
-						--	ADDRBWRADDR <= cap_addr1;
-						--	write_cnt <= write_cnt +1 ; 
-						--	if write_cnt = write_cnt then  
-						--		state <=  write_reg2;
-						--	else
-						--		state <=  write_reg1;
-						--	end if;
-							
-						--when write_reg2  =>
-						--	DINBDIN <= cap_data2;	
-						--	ADDRBWRADDR <= cap_addr1;
-						--	write_cnt <= write_cnt +1 ; 
-						--	if write_cnt = write_cnt then  
-						--		state <=  write_reg1;
-						--	else
-						--		state <=  write_reg2;
-						--	end if;							
-				--	end case;
-       --  end if;	
-					
-  --  end process;
-
-  ADDRARDADDR <=  	addra;	
-  douta <= 	douta_reg;
-   
-   end behavior;
+end behavior;

@@ -1,27 +1,18 @@
--- spybuff.vhd
---
--- DAPHNE spy buffer for one link AFE output, stores 4k 16-bit samples
--- reset only resets the trigger logic, it does not erase the buffer contents
--- triggered on low to to high pulse, then writes next 2048 words into buffer, stops and waits for next trigger
--- add delay elements to produce 64 deep delay for fixed pretrigger
---
--- The "A" port on this buffer is intended to connect to the AXI-Lite interface
---
--- Jamieson Olsen <jamieson@fnal.gov>
+
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 library unisim;
-use unisim.vcomponents.all;
+use unisim.vcomponents.all;										   																				   
 
 entity TX_CAPUTER is
 port(
     clock: in std_logic; -- master clock
     reset: in std_logic; -- active high reset async
     trig:  in std_logic; -- trigger pulse sync to clock
-    data:  in std_logic_vector(15 downto 0); -- afe data sync to clock
+    data:  in std_logic_vector(63 downto 0); -- afe data sync to clock
 
     clka:  in  std_logic;
     addra: in  std_logic_vector(9 downto 0); -- 1k x 32 R/W
@@ -35,13 +26,16 @@ end TX_CAPUTER;
 architecture behavior of TX_CAPUTER is
 
     signal reset_reg: std_logic;
-    signal addr_reg: std_logic_vector(10 downto 0);
-    signal data_reg, data_q, data_delayed: std_logic_vector(31 downto 0);
+    signal addr_reg: std_logic_vector(9 downto 0):="0000000000";
+    signal data_reg, data_delayed1,data_delayed2: std_logic_vector(31 downto 0);
     signal we_reg:   std_logic;
 
     type state_type is (rst, wait4trig, store, wait4done);
-    signal state: state_type;
-
+    signal state: state_type; 
+	
+    type data_write is (write1, write2);
+    signal state_machine: data_write;  
+	
 	component capture_registers
 	port (
 			clka:  in  std_logic;
@@ -51,7 +45,7 @@ architecture behavior of TX_CAPUTER is
 	        wea:   in  std_logic;
 	        douta: out std_logic_vector(31 downto 0);
 	        clkb:  in  std_logic;
-	        addrb: in  std_logic_vector(10 downto 0); -- 2k x 16 writeonly spybuff
+	        addrb: in  std_logic_vector(9 downto 0); -- 2k x 16 writeonly spybuff
 	        dinb:  in  std_logic_vector(31 downto 0);
 	        web:   in  std_logic
 		);
@@ -59,33 +53,8 @@ architecture behavior of TX_CAPUTER is
 
 begin
 
-    -- input delay elements for fixed pre-trigger cascade two 32 bit shift registers
-	-- for a total pre-trigger delay of 64 clocks
-
-    gendelay: for i in 31 downto 0 generate
-
-        srlc32e_0_inst : srlc32e
-        port map(
-            clk => clock,
-            ce => '1',
-            a => "11111",
-            d => data(i),
-            q => open,
-            q31 => data_q(i)  
-        );
-    
-        srlc32e_1_inst : srlc32e
-        port map(
-            clk => clock,
-            ce => '1',
-            a => "11111",
-            d => data_q(i),
-            q => data_delayed(i),
-            q31 => open  
-        );
-
-    end generate gendelay;
-
+ data_delayed1 <= data (31 downto 0);
+ data_delayed2 <= data (63 downto 32);
     -- FSM to wait for trigger pulse and drive addr_reg (write pointer) and we_reg
 
     fsm_proc: process(clock)
@@ -98,7 +67,7 @@ begin
                 we_reg   <= '0';
                 state    <= rst;
             else
-                data_reg <= data_delayed;
+                
 
                 case state is
                     when rst =>
@@ -113,13 +82,26 @@ begin
                             addr_reg <= (others=>'0');
                         end if;
                     when store =>
-                        if (addr_reg="11111111111") then
+                        if (addr_reg="1111111111") then
                             state <= wait4done;
                             we_reg <= '0';
                         else
-                            state <= store;
-                            addr_reg <= std_logic_vector(unsigned(addr_reg) + 1);
-                            we_reg <= '1';
+                            state <= store;	
+							 state_machine <= write1;
+							case state_machine is
+								when  write1=>
+									data_reg <= data_delayed2;
+                            		addr_reg <= std_logic_vector(unsigned(addr_reg) + 1);
+                            		we_reg <= '1'; 
+									state_machine <=   write2;
+								when write2=> 	
+									data_reg <= data_delayed1;
+                            		addr_reg <= std_logic_vector(unsigned(addr_reg) + 1);
+                            		we_reg <= '1'; 
+									state <=   store;
+								when others =>
+								state_machine <= write1;	
+							end case;
                         end if;
                     when wait4done =>
                         if (trig='0') then
@@ -145,7 +127,7 @@ begin
 		douta => douta,
 
 		clkb => clock, -- Port B written to by THIS logic
-		addrb => addr_reg, -- 11 bit write address
+		addrb => addr_reg, -- 10 bit write address
 		dinb => data_reg,
 		web => we_reg
 	);

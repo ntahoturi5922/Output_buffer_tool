@@ -42,28 +42,6 @@ architecture tb of OUT_SPY_BUFF_TB is
     end component;	 
 	
 	
-	
-	
-	
-	
-    component TX_CAPUTER
-    port(
-    clock: in std_logic; -- master clock --156.5MHZ
-    reset: in std_logic; -- active high reset asyn -- only when reset this module works
-    trig:  in std_logic; -- trigger pulse sync to clock  -- from the trigger module	 
-	Data_in: in std_logic_vector (63 downto 0); -- this is the data that we capture and divide it into 2 32 bit data to write to memory 
-	
-    data1:  out std_logic_vector(31 downto 0); -- captured data from the tx line
-	data2:	out std_logic_vector(31 downto 0)
-    );
-    end component;	
-	
-	
-	
-	
-	
-	
-	
     
     signal clock: std_logic := '0';
     signal trig: std_logic := '0';
@@ -89,7 +67,7 @@ architecture tb of OUT_SPY_BUFF_TB is
     signal S_AXI_RRESP: std_logic_vector(1 downto 0);
     signal S_AXI_RVALID: std_logic;
     signal S_AXI_RREADY: std_logic := '0';
-    signal cap_data1,cap_data2: std_logic_vector (31 downto 0); 
+    --signal cap_data1,cap_data2: std_logic_vector (31 downto 0); 
 	signal reset: std_logic;
 begin
     -- DUT instantiation
@@ -147,7 +125,7 @@ reset <= not S_AXI_ARESETN	;
     end process;  
 	
 	
-     trig <= '1'; 
+     
     aximaster_proc: process		
   
 procedure axipoke( constant addr: in std_logic_vector;
@@ -190,34 +168,32 @@ begin
 end procedure axipeek;
 
 begin
-
-wait for 500ns;
+trig <= '1'; 
+wait for 80ns;
 S_AXI_ARESETN <= '1'; -- release AXI reset
  -- poking
-wait for 500ns;
-axipoke(addr => X"0004", data => X"0000000000005050"); -- data to sent to first DAC U50
-wait for 500ns;
-axipoke(addr => X"0008", data => X"0000000000005353"); -- data to sent to middle DAC U53
-wait for 500ns;
-axipoke(addr => X"000C", data => X"000000000000DAC5"); -- data to sent to last DAC U5
+wait for 80ns;
+axipoke(addr => X"0007c000", data => X"bada000000005050"); -- data to sent to first DAC U50
+wait for 80ns;
+axipoke(addr => X"0007c004", data => X"eeee000000005353"); -- data to sent to middle DAC U53
+wait for 80ns;
+axipoke(addr => X"0007c008", data => X"ffff00000000DAC5"); -- data to sent to last DAC U5
 
-wait for 500ns;
-axipoke(addr => X"0000", data => X"00000000DEADBEEF");  -- write anything to CTRL register... GO!
+wait for 80ns;
+axipoke(addr => X"0007c00c", data => X"aaaa0000DEADBEEF");  -- write anything to CTRL register... GO!
 -- peeking
 
+wait for 100ns;
+ trig <= '0';
+wait for 100ns;
+axipeek(addr => X"0007c000");
+wait for 100ns;
+axipeek(addr => X"0007c004"); -- data to sent to middle DAC U53
+wait for 100ns;
+axipeek(addr => X"0007c008"); -- data to sent to last DAC U5
 
-
-wait for 500ns;
-axipeek(addr => X"0004");
-wait for 500ns;
-axipeek(addr => X"0008"); -- data to sent to middle DAC U53
-wait for 500ns;
-axipeek(addr => X"000C"); -- data to sent to last DAC U5
-
-wait for 500ns;
-axipeek(addr => X"0000");  -- write anything to CTRL register... GO!
-
-wait;
+wait for 100ns;
+axipeek(addr => X"0007c00c");  -- write anything to CTRL register... GO!
 
 
 wait;

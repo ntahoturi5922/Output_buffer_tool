@@ -4,7 +4,7 @@ VCS=0
 version=4
 Current Config=compile
 [Configurations]
-compile=xilinx_unisim
+compile=output_buffer_tool
 [Library]
 output_buffer_tool=.\output_buffer_tool\output_buffer_tool.lib
 [$LibMap$]

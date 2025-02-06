@@ -11,7 +11,7 @@ port(
     clock: in std_logic; -- master clock
     trig:  in std_logic; -- trigger pulse sync to clock
     din:   in std_logic_vector(63 downto 0); 
-    timestamp: in std_logic_vector(63 downto 0); 
+   
     
     -- AXI-LITE interface
 
@@ -53,7 +53,7 @@ architecture behavior of OUT_SPY_BUFF is
 	signal axi_rvalid: std_logic;
 	signal axi_arready_reg: std_logic;
     signal axi_arvalid: std_logic;       
-
+	signal data_in_hold: std_logic_vector (63 downto 0);
 	signal rden, wren: std_logic;
 	signal aw_en: std_logic;
     signal addra: std_logic_vector(9 downto 0);
@@ -62,15 +62,15 @@ architecture behavior of OUT_SPY_BUFF is
     signal reset: std_logic;
     signal ena, wea: std_logic;
     signal douta: std_logic_vector(31 downto 0);
-    signal ts_ena, ts_wea: std_logic_vector(3 downto 0);
-    signal ts_douta: std_logic_vector(31 downto 0);
+    --signal ts_ena, ts_wea: std_logic_vector(3 downto 0);
+    --signal ts_douta: std_logic_vector(31 downto 0);
 
-    component spybuff is
+    component TX_CAPUTER is
     port(
         clock: in std_logic;
         reset: in std_logic;
         trig:  in std_logic;
-        data:  in std_logic_vector(15 downto 0);
+        data:  in std_logic_vector(63 downto 0);
         clka:  in  std_logic;
         addra: in  std_logic_vector(9 downto 0);
     	ena:   in  std_logic;
@@ -83,19 +83,19 @@ architecture behavior of OUT_SPY_BUFF is
 begin
 
     reset <= not S_AXI_ARESETN;
-
+	data_in_hold <=  din;
     -- 45 spy buffers (5 AFEs x 9 channels/AFE)
     -- channels 0-7 are AFE data 
     -- channel 8 is the frame marker pattern
     
 
     
-        spybuffer_inst: spybuff
+        spybuffer_inst: TX_CAPUTER
         port map(
             clock => clock,
             reset => reset,
             trig  => trig,
-            data  => din,
+            data  => data_in_hold,
     
             clka => S_AXI_ACLK,
             addra => addra,
@@ -104,30 +104,7 @@ begin
         	dina => S_AXI_WDATA, 
             douta => douta
           );
-    
-
-    
-    -- 4 more spy buffers to store the 64 bit timestamp
-    -- the 64 bit timestamp is "striped" across four spy buffers
-    -- e.g. the first spy buffer stores timestamp bits(15..0)
-    -- the next spy buffer stores timestamp bits(32..16) and so on
-    
    
-    
-        spybuffer_inst: spybuff
-        port map(
-            clock => clock,
-            reset => reset,
-            trig  => trig,
-            data  => timestamp( 16*t+15 downto 16*t ),
-    
-            clka => S_AXI_ACLK,
-            addra => addra,
-        	ena => ts_ena,
-        	wea => ts_wea, 
-        	dina => S_AXI_WDATA,
-            douta => ts_douta
-          );
     
     
 
@@ -359,11 +336,11 @@ begin
     
 
     
-        ena <= '1' when ( axi_arvalid='1' and axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else 
-                     '1' when ( wren='1'        and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else 
+        ena <= '1' when ( axi_arvalid='1' ) else 
+                     '1' when ( wren='1'  ) else 
                      '0';
         
-        wea <= '1' when ( wren='1' and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else '0';
+        wea <= '1' when ( wren='1') else '0';
     
  
 
@@ -371,24 +348,14 @@ begin
 
    
 
-        ts_ena <= '1' when ( axi_arvalid='1' and axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else 
-                     '1' when ( wren='1'        and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else 
-                     '0';
-        
-        ts_wea <= '1' when ( wren='1' and axi_awaddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else '0';
 
     
-	
-    -- big mux for AXI reads from 45 AFE spybuffers and 4 TS spybuffers
-    
 
 
-        ram_dout <= douta when ( axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(9,6)) ) else (others=>'Z');
+        ram_dout <= douta;
 
 
-
-        ram_dout <= ts_douta when ( axi_araddr(17 downto 12)=std_logic_vector(to_unsigned(45,6)) ) else (others=>'Z');
-
+	   
     
 
 end behavior;

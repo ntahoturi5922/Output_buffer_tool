@@ -1,19 +1,4 @@
--- spyram
--- true dual port RAM, independent clocks
--- uses one 36kbit BlockRAM
--- port a = 1k x 32(36) is read/write (for axi access)
--- port b = 2k x 16(18) is write only (for spybuff writing)
---
--- Jamieson Olsen <jamieson@fnal.gov>
--- 
--- Example 16/32 bit word mapping: 
---
--- SpyBuff writes 0xAAAA to addrb 0
--- SpyBuff writes 0xBBBB to addrb 1
--- SpyBuff writes 0xCCCC to addrb 2
--- SpyBuff writes 0xDDDD to addrb 3
--- AXI reads 0xBBBBAAAA from addra 0
--- AXI reads 0xDDDDCCCC from addra 1
+
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -32,7 +17,7 @@ port (
     douta: out std_logic_vector(31 downto 0);
 
     clkb:  in std_logic;
-    addrb: in std_logic_vector(10 downto 0); -- 2k x 16 writeonly spybuff
+    addrb: in std_logic_vector(9 downto 0); -- 1k x 32 writeonly spybuff
     dinb:  in std_logic_vector(31 downto 0);
     web:   in std_logic
 	);
@@ -49,12 +34,12 @@ begin
 
 -- Port A glue logic: AXI-LITE R/W access, 1k x 32
 
-ADDRARDADDR <= addra(9 downto 0) & "00000";
+ADDRARDADDR <= "00000"& addra(9 downto 0)  ;
 wea_i <= "1111" when ( wea='1' ) else "0000";
 
 -- Port B glue logic: Spy Buffer logic access, write only, 2k x 16
 
-ADDRBWRADDR <= addrb(10 downto 0) & "0000";
+ADDRBWRADDR <= "00000"& addrb  ;
 DINBDIN <=  dinb;
 
 RAMB36E2_inst : RAMB36E2

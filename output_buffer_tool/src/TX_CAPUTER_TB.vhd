@@ -172,27 +172,27 @@ trig <= '1';
 wait for 80ns;
 S_AXI_ARESETN <= '1'; -- release AXI reset
  -- poking
-wait for 80ns;
+wait for 100ns;
 axipoke(addr => X"0007c000", data => X"bada000000005050"); -- data to sent to first DAC U50
-wait for 80ns;
+wait for 100ns;
 axipoke(addr => X"0007c004", data => X"eeee000000005353"); -- data to sent to middle DAC U53
-wait for 80ns;
+wait for 100ns;
 axipoke(addr => X"0007c008", data => X"ffff00000000DAC5"); -- data to sent to last DAC U5
 
-wait for 80ns;
+wait for 100ns;
 axipoke(addr => X"0007c00c", data => X"aaaa0000DEADBEEF");  -- write anything to CTRL register... GO!
 -- peeking
 
-wait for 100ns;
+wait for 130ns;
  trig <= '0';
-wait for 100ns;
+wait for 130ns;
 axipeek(addr => X"0007c000");
-wait for 100ns;
+wait for 130ns;
 axipeek(addr => X"0007c004"); -- data to sent to middle DAC U53
-wait for 100ns;
+wait for 130ns;
 axipeek(addr => X"0007c008"); -- data to sent to last DAC U5
 
-wait for 100ns;
+wait for 130ns;
 axipeek(addr => X"0007c00c");  -- write anything to CTRL register... GO!
 
 

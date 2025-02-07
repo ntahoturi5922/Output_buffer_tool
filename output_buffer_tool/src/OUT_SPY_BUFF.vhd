@@ -4,7 +4,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
---use work.daphne3_package.all;
+
 
 entity OUT_SPY_BUFF is
 port(
@@ -62,8 +62,7 @@ architecture behavior of OUT_SPY_BUFF is
     signal reset: std_logic;
     signal ena, wea: std_logic;
     signal douta: std_logic_vector(31 downto 0);
-    --signal ts_ena, ts_wea: std_logic_vector(3 downto 0);
-    --signal ts_douta: std_logic_vector(31 downto 0);
+
 
     component TX_CAPUTER is
     port(
@@ -84,12 +83,7 @@ begin
 
     reset <= not S_AXI_ARESETN;
 	data_in_hold <=  din;
-    -- 45 spy buffers (5 AFEs x 9 channels/AFE)
-    -- channels 0-7 are AFE data 
-    -- channel 8 is the frame marker pattern
-    
-
-    
+  
         spybuffer_inst: TX_CAPUTER
         port map(
             clock => clock,
@@ -311,28 +305,13 @@ begin
 	  end if;
 	end process;
 
-    -- create the necessary enables and muxes to connect 45 + 4 spy buffers
-    -- to the AXI bus 
 
-    -- AXI address bus refers to byte locations
-    -- Spybuffer address bus refers to 32-bit word locations
-    --
-    -- AXI address base+0 = AFE 0 channel 0 (sample1(15..0) & sample0(15..0))
-    -- AXI address base+4 = AFE 0 channel 0 (sample3(15..0) & sample2(15..0))
-    -- AXI address base+8 = AFE 0 channel 0 (sample5(15..0) & sample4(15..0))
-    --
-    -- address decoding use axi address bits (18 downto 13)
-    -- 0x00000-0x01FFC = 0000 000X XXXX XXXX XX00
-    -- 0x02000-0x03FFC = 0000 001X XXXX XXXX XX00
-    -- ...
-    -- 0x60000-0x61FFC = 0110 000X XXXX XXXX XX00 
-    --
-    -- SpyBuffer address is 1k (10 bits, 9..0), maps into axi address bits (11 downto 2)
+	
 
     addra <= axi_awaddr(11 downto 2) when (wren='1') else 
     	     axi_araddr(11 downto 2);
 
-    -- enable and write enable generation for AFE spybuffers, 45 blocks 0-44
+    -- enable and write enable 
     
 
     
@@ -342,9 +321,6 @@ begin
         
         wea <= '1' when ( wren='1') else '0';
     
- 
-
-    -- enable and write enable generation for TS spybuffers, 4 blocks 45-48
 
    
 
@@ -352,7 +328,7 @@ begin
     
 
 
-        ram_dout <= douta;
+        ram_dout <= douta  ;
 
 
 	   

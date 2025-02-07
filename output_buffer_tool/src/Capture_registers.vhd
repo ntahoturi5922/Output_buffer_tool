@@ -34,7 +34,7 @@ begin
 
 -- Port A glue logic: AXI-LITE R/W access, 1k x 32
 
-ADDRARDADDR <= "00000"& addra(9 downto 0)  ;
+ADDRARDADDR <= addra(9 downto 0)&  "00000" ;
 wea_i <= "1111" when ( wea='1' ) else "0000";
 
 -- Port B glue logic: Spy Buffer logic access, write only, 2k x 16

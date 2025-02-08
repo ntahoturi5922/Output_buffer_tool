@@ -1,0 +1,4 @@
+.\src\TX_CAPUTER.vhd
+.\src\TX_CAPUTER_TB.vhd
+.\src\Capture_registers.vhd
+.\src\OUT_SPY_BUFF.vhd

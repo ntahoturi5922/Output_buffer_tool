@@ -1,0 +1,6 @@
+14
+~E 1 "../src/Capture_registers.vhd" 8 capture_registers
+~E 1 "../src/TX_CAPUTER_TB.vhd" 5 TB_TX_CAPUTER
+~A 1 "../src/TX_CAPUTER_TB.vhd" 9 behavior
+~E 1 "../src/TX_CAPUTER.vhd" 8 TX_CAPUTER
+~A 1 "../src/TX_CAPUTER.vhd" 23 behavior

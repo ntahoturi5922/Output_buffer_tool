@@ -1,0 +1,272 @@
+# ELBREAD: Elaboration process.
+# ELBREAD: Warning: ELBREAD_0081 TX_CAPUTER.vhd (112): Design unit capture_registers instantiated in output_buffer_tool.TX_CAPUTER(behavior) not found in searched libraries: output_buffer_tool.
+# ELBREAD: Elaboration time 0.0 [s].
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0078: Capture_registers.vhd : (45, 36): Unknown identifier "RAMB36E2".
+# Error: COMP96_0134: Capture_registers.vhd : (45, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Compile failure 2 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (45, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Compile failure 1 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0078: Capture_registers.vhd : (45, 17): Unknown identifier "RAMB36E2".
+# Error: COMP96_0134: Capture_registers.vhd : (45, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Compile failure 2 Errors 0 Warnings  Analysis time :  47.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (45, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Compile failure 1 Errors 0 Warnings  Analysis time :  62.0 [ms]
+asim -O5 +access +r +m+out_spy_buff_tb out_spy_buff_tb tb
+# ELBREAD: Elaboration process.
+# ELBREAD: Warning: ELBREAD_0081 TX_CAPUTER.vhd (112): Design unit capture_registers instantiated in output_buffer_tool.TX_CAPUTER(behavior) not found in searched libraries: output_buffer_tool.
+# ELBREAD: Elaboration time 0.1 [s].
+# VSIM: Stack memory: 32MB
+# VSIM: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# KERNEL: Time resolution set to 1ps.
+# ELBREAD: Warning: ELBREAD_0037 TX_CAPUTER.vhd (112): Component /OUT_SPY_BUFF_TB/uut/spybuffer_inst/spyram_inst : capture_registers not bound.
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 6643 kB (elbread=427 elab2=6076 kernel=140 sdf=0)
+# KERNEL: ASDB file was created in location C:\Users\jntahotu\Downloads\axi_output_buffer\output_buffer_tool\src\wave.asdb
+#  5:40 PM, Friday, February 7, 2025
+#  Simulation has been initialized
+# add wave -noreg {/OUT_SPY_BUFF_TB/clock}
+# add wave -noreg {/OUT_SPY_BUFF_TB/trig}
+# add wave -noreg {/OUT_SPY_BUFF_TB/din}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ACLK}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARESETN}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWADDR}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWPROT}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WDATA}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WSTRB}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_BRESP}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_BVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_BREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARADDR}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARPROT}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RDATA}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RRESP}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/reset}
+# VSIM: 25 object(s) traced.
+# Waveform file 'untitled.awc' connected to 'C:/Users/jntahotu/Downloads/axi_output_buffer/output_buffer_tool/src/wave.asdb'.
+run
+endsim
+# KERNEL: stopped at time: 83187430 ns
+# VSIM: Simulation has finished.
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Error: COMP96_0078: OUT_SPY_BUFF.vhd : (309, 15): Unknown identifier "CONV_STD_LOGIC_VECTOR".
+# Error: COMP96_0078: OUT_SPY_BUFF.vhd : (309, 37): Unknown identifier "CONV_INTEGER".
+# Error: COMP96_0133: OUT_SPY_BUFF.vhd : (309, 15): Cannot find object declaration.
+# Error: COMP96_0289: OUT_SPY_BUFF.vhd : (309, 15): Prefix of index must be an array.
+# Error: COMP96_0077: OUT_SPY_BUFF.vhd : (309, 15): Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'.
+# Compile failure 6 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Error: COMP96_0078: OUT_SPY_BUFF.vhd : (309, 15): Unknown identifier "TO_STD_LOGIC_VECTOR".
+# Error: COMP96_0078: OUT_SPY_BUFF.vhd : (309, 35): Unknown identifier "CONV_INTEGER".
+# Error: COMP96_0133: OUT_SPY_BUFF.vhd : (309, 15): Cannot find object declaration.
+# Error: COMP96_0289: OUT_SPY_BUFF.vhd : (309, 15): Prefix of index must be an array.
+# Error: COMP96_0077: OUT_SPY_BUFF.vhd : (309, 15): Undefined type of expression. Expected type 'STD_LOGIC_VECTOR'.
+# Compile failure 6 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Error: COMP96_0131: OUT_SPY_BUFF.vhd : (309, 31): Illegal operand for type conversion.
+# Error: COMP96_0149: OUT_SPY_BUFF.vhd : (309, 50): Explicit type conversions are allowed between closely related types only.
+# Error: COMP96_0367: OUT_SPY_BUFF.vhd : (309, 15): Improper array length (1). Expected length is 10.
+# Compile failure 4 Errors 0 Warnings  Analysis time :  46.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Error: COMP96_0131: OUT_SPY_BUFF.vhd : (309, 31): Illegal operand for type conversion.
+# Error: COMP96_0149: OUT_SPY_BUFF.vhd : (309, 61): Explicit type conversions are allowed between closely related types only.
+# Error: COMP96_0367: OUT_SPY_BUFF.vhd : (309, 15): Improper array length (1). Expected length is 10.
+# Compile failure 4 Errors 0 Warnings  Analysis time :  47.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Error: COMP96_0131: OUT_SPY_BUFF.vhd : (309, 31): Illegal operand for type conversion.
+# Error: COMP96_0149: OUT_SPY_BUFF.vhd : (309, 50): Explicit type conversions are allowed between closely related types only.
+# Error: COMP96_0367: OUT_SPY_BUFF.vhd : (309, 15): Improper array length (1). Expected length is 10.
+# Compile failure 4 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Error: COMP96_0019: OUT_SPY_BUFF.vhd : (309, 35): Keyword 'when' expected.
+# Error: COMP96_0015: OUT_SPY_BUFF.vhd : (309, 35): ';' expected.
+# Error: COMP96_0019: OUT_SPY_BUFF.vhd : (309, 35): Keyword 'end' expected.
+# Error: COMP96_0016: OUT_SPY_BUFF.vhd : (309, 36): Design unit declaration expected.
+# Compile failure 5 Errors 0 Warnings  Analysis time :  62.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Error: COMP96_0019: OUT_SPY_BUFF.vhd : (309, 48): Keyword 'when' expected.
+# Error: COMP96_0015: OUT_SPY_BUFF.vhd : (309, 48): ';' expected.
+# Error: COMP96_0019: OUT_SPY_BUFF.vhd : (309, 48): Keyword 'end' expected.
+# Error: COMP96_0016: OUT_SPY_BUFF.vhd : (309, 49): Design unit declaration expected.
+# Compile failure 5 Errors 0 Warnings  Analysis time :  46.0 [ms]
+acom -O3 -e 100 -work output_buffer_tool -2002  $dsn/src/TX_CAPUTER.vhd $dsn/src/TX_CAPUTER_TB.vhd $dsn/src/Capture_registers.vhd $dsn/src/OUT_SPY_BUFF.vhd
+# Compile Entity "TX_CAPUTER"
+# Compile Architecture "behavior" of Entity "TX_CAPUTER"
+# Compile Entity "OUT_SPY_BUFF_TB"
+# Compile Architecture "tb" of Entity "OUT_SPY_BUFF_TB"
+# Compile Entity "capture_registers"
+# Compile Architecture "behavior" of Entity "capture_registers"
+# Error: COMP96_0134: Capture_registers.vhd : (46, 17): Cannot find component declaration.
+# Compile Entity "OUT_SPY_BUFF"
+# Compile Architecture "behavior" of Entity "OUT_SPY_BUFF"
+# Compile failure 1 Errors 0 Warnings  Analysis time :  62.0 [ms]
+asim -O5 +access +r +m+out_spy_buff_tb out_spy_buff_tb tb
+# ELBREAD: Elaboration process.
+# ELBREAD: Warning: ELBREAD_0081 TX_CAPUTER.vhd (112): Design unit capture_registers instantiated in output_buffer_tool.TX_CAPUTER(behavior) not found in searched libraries: output_buffer_tool.
+# ELBREAD: Elaboration time 0.0 [s].
+# VSIM: Stack memory: 32MB
+# VSIM: Retval memory: 32MB
+# KERNEL: Main thread initiated.
+# KERNEL: Kernel process initialization phase.
+# ELAB2: Elaboration final pass...
+# ELAB2: Create instances ...
+# KERNEL: Time resolution set to 1ps.
+# ELBREAD: Warning: ELBREAD_0037 TX_CAPUTER.vhd (112): Component /OUT_SPY_BUFF_TB/uut/spybuffer_inst/spyram_inst : capture_registers not bound.
+# ELAB2: Create instances complete.
+# SLP: Started
+# SLP: Elaboration phase ...
+# SLP: Elaboration phase ... skipped, nothing to simulate in SLP mode : 0.0 [s]
+# SLP: Finished : 0.0 [s]
+# ELAB2: Elaboration final pass complete - time: 0.0 [s].
+# KERNEL: Kernel process initialization done.
+# Allocation: Simulator allocated 6644 kB (elbread=427 elab2=6076 kernel=140 sdf=0)
+# KERNEL: ASDB file was created in location C:\Users\jntahotu\Downloads\axi_output_buffer\output_buffer_tool\src\wave.asdb
+#  6:16 PM, Friday, February 7, 2025
+#  Simulation has been initialized
+# add wave -noreg {/OUT_SPY_BUFF_TB/clock}
+# add wave -noreg {/OUT_SPY_BUFF_TB/trig}
+# add wave -noreg {/OUT_SPY_BUFF_TB/din}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ACLK}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARESETN}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWADDR}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWPROT}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_AWREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WDATA}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WSTRB}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_WREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_BRESP}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_BVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_BREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARADDR}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARPROT}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_ARREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RDATA}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RRESP}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RVALID}
+# add wave -noreg {/OUT_SPY_BUFF_TB/S_AXI_RREADY}
+# add wave -noreg {/OUT_SPY_BUFF_TB/reset}
+# VSIM: 25 object(s) traced.
+# Waveform file 'untitled.awc' connected to 'C:/Users/jntahotu/Downloads/axi_output_buffer/output_buffer_tool/src/wave.asdb'.
+run
+endsim
+# KERNEL: stopped at time: 209726336 ns
+# VSIM: Simulation has finished.

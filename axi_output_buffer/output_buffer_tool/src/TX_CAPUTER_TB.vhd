@@ -134,7 +134,7 @@ begin
     wait until rising_edge(S_AXI_ACLK);
     S_AXI_AWADDR <= addr;
     S_AXI_AWVALID <= '1';
-    din <= data;
+    --din <= data;
     S_AXI_WVALID <= '1';
     S_AXI_BREADY <= '1';
     S_AXI_WSTRB <= "1111";	
@@ -142,7 +142,7 @@ begin
     wait until (rising_edge(S_AXI_ACLK) and S_AXI_AWREADY='1' and S_AXI_WREADY='1');
     S_AXI_AWADDR <= addr;
     S_AXI_AWVALID <= '0';
-    din <= data;
+    --din <= data;
     S_AXI_AWVALID <= '0';
     S_AXI_WSTRB <= "0000";	
 	--trig <= '1';
@@ -168,34 +168,47 @@ begin
 end procedure axipeek;
 
 begin
-trig <= '1'; 
+ 
 wait for 80ns;
 S_AXI_ARESETN <= '1'; -- release AXI reset
  -- poking
-wait for 100ns;
-axipoke(addr => X"0007c000", data => X"bada000000005050"); -- data to sent to first DAC U50
-wait for 100ns;
-axipoke(addr => X"0007c004", data => X"eeee000000005353"); -- data to sent to middle DAC U53
-wait for 100ns;
-axipoke(addr => X"0007c008", data => X"ffff00000000DAC5"); -- data to sent to last DAC U5
+ trig <= '1';
+wait for 80ns;
+ din <= X"bada000000005050"; 
 
-wait for 100ns;
-axipoke(addr => X"0007c00c", data => X"aaaa0000DEADBEEF");  -- write anything to CTRL register... GO!
+wait for 80ns;
+--trig <= '1';
+din<= X"eeee000000005353"; 
+wait for 80ns;
+--trig <= '1';
+din <= X"ffff00000000DAC5"; 
+
+wait for 80ns;
+--trig <= '1';
+din<= X"aaaa0000DEADBEEF";  
+
 -- peeking
 
-wait for 130ns;
- trig <= '0';
-wait for 130ns;
-axipeek(addr => X"0007c000");
-wait for 130ns;
-axipeek(addr => X"0007c004"); -- data to sent to middle DAC U53
-wait for 130ns;
-axipeek(addr => X"0007c008"); -- data to sent to last DAC U5
-
-wait for 130ns;
-axipeek(addr => X"0007c00c");  -- write anything to CTRL register... GO!
-
-
+wait for 80ns;
+trig <= '0';
+axipeek(addr => X"00000000");
+wait for 80ns;
+--trig <= '0';
+axipeek(addr => X"00000004");
+wait for 80ns;
+--trig <= '0';
+axipeek(addr => X"00000008");
+wait for 80ns;
+axipeek(addr => X"0000000c");
+wait for 80ns;
+axipeek(addr => X"00000010");
+wait for 80ns;
+axipeek(addr => X"00000014");
+wait for 80ns;
+axipeek(addr => X"00000004");
+wait for 80ns;
+axipeek(addr => X"00000008");
+wait for 80ns;
 wait;
 end process aximaster_proc;
 

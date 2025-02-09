@@ -13,7 +13,7 @@ port(
     data:  in std_logic_vector(63 downto 0);
 
     clka:  in  std_logic;  -- axi read clock 100mhz
-    addra: in  std_logic_vector(9 downto 0);
+    addra: in  std_logic_vector(14 downto 0);
     ena:   in  std_logic;
     wea:   in  std_logic;
     dina:  in  std_logic_vector(31 downto 0);
@@ -24,9 +24,10 @@ end TX_CAPUTER;
 architecture behavior of TX_CAPUTER is
 
     signal reset_reg: std_logic;
-    signal addr_reg: std_logic_vector(9 downto 0) := (others => '0');
+    signal addr_reg: std_logic_vector(14 downto 0) := (others => '0');
     signal data_reg, data_delayed1, data_delayed2: std_logic_vector(31 downto 0);
     signal we_reg: std_logic;
+    signal write_cnt: integer range 0 to 32:= 0;
 
     type state_type is (rst, wait4trig, store, wait4done);
     signal state: state_type;
@@ -37,13 +38,13 @@ architecture behavior of TX_CAPUTER is
     component capture_registers
     port (
         clka:  in  std_logic;
-        addra: in  std_logic_vector(9 downto 0);
+        addra: in  std_logic_vector(14 downto 0);
         dina:  in  std_logic_vector(31 downto 0);
         ena:   in  std_logic;
         wea:   in  std_logic;
         douta: out std_logic_vector(31 downto 0);
         clkb:  in  std_logic;
-        addrb: in  std_logic_vector(9 downto 0);
+        addrb: in  std_logic_vector(14 downto 0);
         dinb:  in  std_logic_vector(31 downto 0);
         web:   in  std_logic
     );
@@ -81,16 +82,29 @@ begin
                         case state_machine is
                             when write1 =>
                                 data_reg <= data_delayed1;
-                                state_machine <= write2;
+                                addr_reg <= addr_reg;
+                               -- write_cnt <= 0;
+                               -- if write_cnt > 32 then
+                                    state_machine <= write2;
+                                  --  write_cnt <= write_cnt +1;
+                               --  else
+                                   -- state_machine <= write1;
+                                -- end if;
                             when write2 =>
+                              --  write_cnt <= 0;
                                 addr_reg <= std_logic_vector(unsigned(addr_reg) + 1);
                                 data_reg <= data_delayed2;
-                                state_machine <= write1;
+                               -- if write_cnt < 32 then
+                                    state_machine <= write1;
+                                  --  write_cnt <= write_cnt +1;
+                              --  else
+                                  --  state_machine <= write2;
+                               -- end if;
                             when others =>
                                 state_machine <= write1;
                         end case;
                         
-                        if (addr_reg = "1111111111") then
+                        if (addr_reg = "011111111111") then      -- write up to 0x07ff
                             state <= wait4done;
                             we_reg <= '0';
                         else

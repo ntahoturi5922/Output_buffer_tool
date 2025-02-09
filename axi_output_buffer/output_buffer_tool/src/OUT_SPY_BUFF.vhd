@@ -56,12 +56,12 @@ architecture behavior of OUT_SPY_BUFF is
 	signal data_in_hold: std_logic_vector (63 downto 0);
 	signal rden, wren: std_logic;
 	signal aw_en: std_logic;
-    signal addra: std_logic_vector(9 downto 0);
+    signal addra: std_logic_vector(14 downto 0);
     signal ram_dout: std_logic_vector(31 downto 0);
-	signal bram_addr: std_logic_vector (9 downto 0);
+	--signal bram_addr: std_logic_vector (9 downto 0);
     signal reset: std_logic;
     signal ena, wea: std_logic;
-    signal douta: std_logic_vector(31 downto 0);
+    --signal douta: std_logic_vector(31 downto 0);
 
 
     component TX_CAPUTER is
@@ -71,7 +71,7 @@ architecture behavior of OUT_SPY_BUFF is
         trig:  in std_logic;
         data:  in std_logic_vector(63 downto 0);
         clka:  in  std_logic;
-        addra: in  std_logic_vector(9 downto 0);
+        addra: in  std_logic_vector(14 downto 0);
     	ena:   in  std_logic;
     	wea:   in  std_logic;
     	dina:  in  std_logic_vector(31 downto 0);
@@ -96,7 +96,7 @@ begin
         	ena => ena,
         	wea => wea,
         	dina => S_AXI_WDATA, 
-            douta => douta
+            douta => ram_dout
           );
    
     
@@ -306,10 +306,10 @@ begin
 	end process;
 
 
-	bram_addr <= std_logic_vector( unsigned(axi_araddr(9 downto 0)) / 4);
+	--bram_addr <= std_logic_vector( unsigned(axi_araddr(9 downto 0)) / 4);
 
-    addra <= axi_awaddr(9 downto 0) when (wren='1') else 
-    	     	bram_addr;
+    addra <= axi_awaddr(14 downto 0) when (wren='1') else 
+    	     	axi_araddr(14 downto 0);
 
     -- enable and write enable 
     
@@ -322,13 +322,7 @@ begin
         wea <= '1' when ( wren='1') else '0';
     
 
-   
-
-
-    
-
-
-        ram_dout <= douta  ;
+        --ram_dout <= douta  ;
 
 
 	   
